@@ -105,7 +105,7 @@ end
 
 # Perform Configuration
 Dir.chdir(local_temp_directory) do
-    system("git checkout develop --quiet")
+    system("git checkout master --quiet")
 
     # Remove Git
     if File.directory?(".git")
