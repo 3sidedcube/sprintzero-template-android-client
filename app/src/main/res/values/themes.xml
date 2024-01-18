@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Splash screen theme -->
+	<style name="Theme.SprintZeroTemplate.Splash" parent="Theme.SplashScreen.IconBackground">
+		<item name="windowSplashScreenBackground">@color/primary_300</item>
+		<item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+		<item name="postSplashScreenTheme">@style/Theme.SprintZeroTemplate</item>
+	</style>
+
+	<!-- Main theme -->
+	<style name="Theme.SprintZeroTemplate" parent="Theme.MaterialComponents.Light.NoActionBar">
+		<!-- Primary brand color -->
+		<item name="colorPrimary">@color/primary_300</item>
+		<item name="colorPrimaryVariant">@color/primary_200</item>
+		<item name="colorOnPrimary">@color/primary_300</item>
+		<!-- Secondary brand color -->
+		<item name="colorSecondary">@color/primary_400</item>
+		<item name="colorSecondaryVariant">@color/primary_500</item>
+		<item name="colorOnSecondary">@color/primary_400</item>
+		<!-- Status bar color -->
+		<item name="android:statusBarColor">@color/transparent</item>
+		<item name="android:windowLightStatusBar">false</item>
+		<item name="android:windowTranslucentNavigation">true</item>
+	</style>
+</resources>

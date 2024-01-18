@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1038926286158",
+    "project_id": "sprintzero-template",
+    "storage_bucket": "sprintzero-template.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038926286158:android:bdeb93ba61f4f35c51a21f",
+        "android_client_info": {
+          "package_name": "com.cube.sprintzerotemplate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8OFm7_QA-IiXUFva1LJyJZLnkx6YH86w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
