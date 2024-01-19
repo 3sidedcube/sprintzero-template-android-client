@@ -40,7 +40,7 @@ The template has Timber logging installed and setup. See [TimberLoggingHelper.kt
 In production environments, the template is setup to send exception errors and crashes to Sentry. Sentry has been fully integrated with Timber so no additional functions are required.
 
 ## Creating a New Project at Cube
-The following is a step-by-step process of creating a new project at Cube.
+The following is a step-by-step process for creating a new project at Cube.
 
 ### 1. Get all required information:
 - Pick a name for your repository. It should be something along the lines of `myproject-android-client`.
@@ -71,7 +71,7 @@ The following is a step-by-step process of creating a new project at Cube.
 - Go to the Sentry console and sign in with the 3 Sided Cube Google account.
 - Click on `Create Project` to create a new Sentry project.
 - Ensure you are creating an Android project and select to setup your own alerts later.
-- Once created, select `Manual` in the tabs and copy the value `io.sentry.dsn`. You will need this for later.
+- Once created, select `Manual` in the tabs and copy the value for `io.sentry.dsn`. You will need this to connect to Sentry later.
 
 ```xml
 <meta-data android:name="io.sentry.dsn" android:value="https://85b539e94acafada13bf8d86ed2ca1da@o4506592770588672.ingest.sentry.io/4506593210007552" />
@@ -94,7 +94,7 @@ kotlin.code.style=official
 org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
 android.useAndroidX=true
 android.nonTransitiveRClass=true
-systemProp.SENTRY_DSN="{{Your Sentry URL Acquired in Step 4}}"
+systemProp.SENTRY_DSN={{Your Sentry URL Acquired in Step 4}}
 ```
 
 - Ensure that the build process completes successfully without errors.
