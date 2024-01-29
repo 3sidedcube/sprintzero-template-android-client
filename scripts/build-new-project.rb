@@ -117,9 +117,6 @@ Dir.chdir(local_temp_directory) do
         FileUtils.remove_entry("./scripts/build-new-project.rb")
     end
 
-    # Update readme
-    find_and_replace("See [TimberLoggingHelper.kt](app/src/main/java/com/cube/sprintzerotemplate/lib/util/TimberLoggingHelper.kt)", "See [TimberLoggingHelper.kt](app/src/main/java/#{new_package}/lib/util/TimberLoggingHelper.kt)")
-
     # Update package declarations
     find_and_replace("com.cube.sprintzerotemplate", new_package.gsub("/", "."))
 
@@ -138,6 +135,9 @@ Dir.chdir(local_temp_directory) do
     find_and_replace("<style name=\"Theme.SprintZeroTemplate.Splash\" parent=\"Theme.SplashScreen.IconBackground\">", "<style name=\"Theme.#{new_name}.Splash\" parent=\"Theme.SplashScreen.IconBackground\">")
     find_and_replace("<style name=\"Theme.SprintZeroTemplate\" parent=\"Theme.MaterialComponents.Light.NoActionBar\">", "<style name=\"Theme.#{new_name}\" parent=\"Theme.MaterialComponents.Light.NoActionBar\">")
     find_and_replace("<item name=\"postSplashScreenTheme\">@style/Theme.SprintZeroTemplate</item>", "<item name=\"postSplashScreenTheme\">@style/Theme.#{new_name}</item>")
+
+    # Update readme
+    find_and_replace("com/cube/sprintzerotemplate", new_package)
 
     # Update the package structure
     replace_package_directory(new_package, "main")
