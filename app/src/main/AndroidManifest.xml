@@ -23,7 +23,7 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name=".app.activities.HomeActivity"
+			android:name=".app.activities.MainTabbedActivity"
 			android:exported="true"
 			android:screenOrientation="portrait"
 			tools:ignore="LockedOrientationActivity" />

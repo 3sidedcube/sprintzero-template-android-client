@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/info_nav"
+    app:startDestination="@+id/info_tab">
+
+    <fragment
+        android:id="@+id/info_tab"
+        android:label="@string/tab_title_info"
+        android:name="com.cube.sprintzerotemplate.app.fragments.InfoFragment"
+        tools:layout="@layout/fragment_info">
+    </fragment>
+
+</navigation>

@@ -2,7 +2,7 @@
 <resources>
 	<!-- Splash screen theme -->
 	<style name="Theme.SprintZeroTemplate.Splash" parent="Theme.SplashScreen.IconBackground">
-		<item name="windowSplashScreenBackground">@color/primary_300</item>
+		<item name="windowSplashScreenBackground">@color/green</item>
 		<item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
 		<item name="postSplashScreenTheme">@style/Theme.SprintZeroTemplate</item>
 	</style>
@@ -10,13 +10,13 @@
 	<!-- Main theme -->
 	<style name="Theme.SprintZeroTemplate" parent="Theme.MaterialComponents.Light.NoActionBar">
 		<!-- Primary brand color -->
-		<item name="colorPrimary">@color/primary_300</item>
-		<item name="colorPrimaryVariant">@color/primary_200</item>
-		<item name="colorOnPrimary">@color/primary_300</item>
+		<item name="colorPrimary">@color/red</item>
+		<item name="colorPrimaryVariant">@color/white</item>
+		<item name="colorOnPrimary">@color/red</item>
 		<!-- Secondary brand color -->
-		<item name="colorSecondary">@color/primary_400</item>
-		<item name="colorSecondaryVariant">@color/primary_500</item>
-		<item name="colorOnSecondary">@color/primary_400</item>
+		<item name="colorSecondary">@color/blue</item>
+		<item name="colorSecondaryVariant">@color/off_white</item>
+		<item name="colorOnSecondary">@color/blue</item>
 		<!-- Status bar color -->
 		<item name="android:statusBarColor">@color/transparent</item>
 		<item name="android:windowLightStatusBar">false</item>

@@ -4,6 +4,7 @@ import android.app.Application
 import com.cube.sprintzerotemplate.BuildConfig
 import com.cube.sprintzerotemplate.lib.preferences.GlobalAppPreferences
 import com.cube.sprintzerotemplate.lib.util.TimberProductionTree
+import dagger.hilt.android.HiltAndroidApp
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions
@@ -14,6 +15,7 @@ import timber.log.Timber
 /**
  * Application class for the app
  */
+@HiltAndroidApp
 class SprintZeroTemplateApp : Application() {
 
 	override fun onCreate() {

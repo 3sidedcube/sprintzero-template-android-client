@@ -1,3 +1,8 @@
 <resources>
 	<string name="app_name">Sprint Zero Template</string>
+	<string name="tab_title_home">Home</string>
+	<string name="tab_title_lineup">Line-Up</string>
+	<string name="tab_title_discover">Discover</string>
+	<string name="tab_title_map">Map</string>
+	<string name="tab_title_info">Info</string>
 </resources>

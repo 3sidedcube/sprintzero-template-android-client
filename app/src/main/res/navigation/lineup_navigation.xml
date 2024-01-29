@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lineup_nav"
+    app:startDestination="@+id/lineup_tab">
+
+    <fragment
+        android:id="@+id/lineup_tab"
+        android:label="@string/tab_title_lineup"
+        android:name="com.cube.sprintzerotemplate.app.fragments.LineupFragment"
+        tools:layout="@layout/fragment_lineup">
+    </fragment>
+
+</navigation>

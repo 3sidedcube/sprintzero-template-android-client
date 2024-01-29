@@ -27,7 +27,7 @@ class BootActivity : AppCompatActivity() {
 
 			AnalyticsHelper.setupAnalytics(true)
 
-			startActivity(HomeActivity.getIntent(this@BootActivity))
+			startActivity(MainTabbedActivity.getIntent(this@BootActivity))
 		}
 	}
 }
