@@ -130,10 +130,6 @@ Dir.chdir(local_temp_directory) do
     # Update settings.gradle
     find_and_replace("rootProject.name = \"Sprint Zero Template\"", "rootProject.name = \"#{new_name}\"")
 
-    # Update bitrise.yml
-    find_and_replace("OUTPUT_NAME: sprintzerotemplate-app-release-firebaseStaging-apiStaging-signed", "OUTPUT_NAME: #{new_name.downcase}-app-release-firebaseStaging-apiStaging-signed")
-    find_and_replace("OUTPUT_NAME: sprintzerotemplate-app-release-firebaseLive-apiLive-signed", "OUTPUT_NAME: #{new_name.downcase}-app-release-firebaseLive-apiLive-signed")
-
     # Update strings.xml and themes.xml
     find_and_replace("<string name=\"app_name\">Sprint Zero Template</string>", "<string name=\"app_name\">#{new_name}</string>")
     find_and_replace("<style name=\"Theme.SprintZeroTemplate.Splash\" parent=\"Theme.SplashScreen.IconBackground\">", "<style name=\"Theme.#{new_name}.Splash\" parent=\"Theme.SplashScreen.IconBackground\">")

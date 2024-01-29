@@ -2,7 +2,7 @@ format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: android
 workflows:
-  assembleProductionAPK:
+  assemble:
     description: >-
       Base workflow for building Android apps.
     steps:
@@ -22,7 +22,7 @@ workflows:
             - file_name: gradle.properties
       - set-java-version@1:
           inputs:
-            - set_java_version: '17'
+            - set_java_version: 17
       - install-missing-android-tools@3:
           inputs:
             - gradlew_path: $PROJECT_LOCATION/gradlew
@@ -31,31 +31,50 @@ workflows:
             - project_location: $PROJECT_LOCATION
             - module: $MODULE
             - variant: $RELEASE_VARIANT
-      - android-build-for-ui-testing@0:
-          inputs:
-            - variant: $DEBUG_VARIANT
-            - module: $MODULE
-      - virtual-device-testing-for-android@1:
-          inputs:
-            - test_devices: NexusLowRes,26,en,portrait
-            - test_type: instrumentation
       - gradle-runner@2:
           inputs:
             - app_file_exclude_filter: |
-                *debug*.apk
-                *unaligned*.apk
-                *aligned*.apk
-                *unasigned*.apk
+                *unaligned.apk
                 *Test*.apk
                 */intermediates/*
+                *unasigned.apk
+                *aligned.apk*
             - gradle_task: $GRADLE_TASK
       - sign-apk@1:
           inputs:
-            - debuggable_permitted: 'false'
-            - output_name: $OUTPUT_NAME
-            - use_apk_signer: 'true'
+            - debuggable_permitted: false
+            - android_app: $BITRISE_APK_PATH_LIST\n$BITRISE_AAB_PATH_LIST\n$BITRISE_TEST_APK_PATH
+            - use_apk_signer: true
       - cache-push@2: {}
       - deploy-to-bitrise-io@2: {}
+      - find-jira-issue@0:
+          is_skippable: true
+          inputs:
+            - find_issue_content: $BITRISE_GIT_BRANCH $BITRISE_GIT_MESSAGE
+      - post-jira-comment-with-build-details@1:
+          is_skippable: true
+          inputs:
+            - api_token: $JIRA_API_TOKEN
+            - issue_keys: $JIRA_ISSUE_LIST
+            - base_url: $JIRA_BASE_URL
+            - build_message: |-
+                ||Build number|[$BITRISE_BUILD_NUMBER|$BITRISE_PUBLIC_INSTALL_PAGE_URL]|
+                ||Author|$GIT_CLONE_COMMIT_AUTHOR_NAME|
+                ||Branch|$BITRISE_GIT_BRANCH|
+                ||Commit message|$GIT_CLONE_COMMIT_MESSAGE_SUBJECT|
+            - user_name: $JIRA_EMAIL_USER
+      - slack@3:
+          inputs:
+            - message: |-
+                Build for `$BITRISE_APP_TITLE` completed using workflow `$BITRISE_TRIGGERED_WORKFLOW_TITLE` (variant = `$RELEASE_VARIANT`)
+                
+                Build: `$BITRISE_BUILD_NUMBER`
+                Build branch: `$BITRISE_GIT_BRANCH`
+                Build commit: `$GIT_CLONE_COMMIT_MESSAGE_BODY`
+            - webhook_url: $SLACK_WEBHOOK
+  assembleAllAPKS:
+    before_run:
+      - assemble
     envs:
       - opts:
           is_expand: false
@@ -65,66 +84,27 @@ workflows:
         RELEASE_VARIANT: firebaseLiveApiLiveRelease
       - opts:
           is_expand: false
-        OUTPUT_NAME: sprintzerotemplate-app-release-firebaseLive-apiLive-signed
+        GRADLE_TASK: |-
+          assembleRelease
+          bundleRelease
+  assembleProdAPKS:
+    before_run:
+      - assemble
+    envs:
+      - opts:
+          is_expand: false
+        DEBUG_VARIANT: firebaseLiveApiLiveDebug
+      - opts:
+          is_expand: false
+        RELEASE_VARIANT: firebaseLiveApiLiveRelease
       - opts:
           is_expand: false
         GRADLE_TASK: |-
           assembleFirebaseLiveApiLiveRelease
           bundleFirebaseLiveApiLiveRelease
-  assembleStagingAPK:
-    description: >-
-      Base workflow for building Android apps.
-    steps:
-      - activate-ssh-key@4: {}
-      - git-clone@7: {}
-      - cache-pull@2: {}
-      - generate-text-file@0:
-          inputs:
-            - file_content: |-
-                kotlin.code.style=official
-                org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-                android.defaults.buildfeatures.buildconfig=true
-                android.nonFinalResIds=false
-                android.nonTransitiveRClass=false
-                android.useAndroidX=true
-                android.enableJetifier=true
-            - file_name: gradle.properties
-      - set-java-version@1:
-          inputs:
-            - set_java_version: '17'
-      - install-missing-android-tools@3:
-          inputs:
-            - gradlew_path: $PROJECT_LOCATION/gradlew
-      - android-unit-test@1:
-          inputs:
-            - project_location: $PROJECT_LOCATION
-            - module: $MODULE
-            - variant: $RELEASE_VARIANT
-      - android-build-for-ui-testing@0:
-          inputs:
-            - variant: $DEBUG_VARIANT
-            - module: $MODULE
-      - virtual-device-testing-for-android@1:
-          inputs:
-            - test_devices: NexusLowRes,26,en,portrait
-            - test_type: instrumentation
-      - gradle-runner@2:
-          inputs:
-            - app_file_exclude_filter: |
-                *debug*.apk
-                *unaligned*.apk
-                *aligned*.apk
-                *unasigned*.apk
-                *Test*.apk
-                */intermediates/*
-            - gradle_task: $GRADLE_TASK
-      - sign-apk@1:
-          inputs:
-            - debuggable_permitted: 'false'
-            - output_name: $OUTPUT_NAME
-            - use_apk_signer: 'true'
-      - cache-push@2: {}
-      - deploy-to-bitrise-io@2: {}
+  assembleStagingAPKS:
+    before_run:
+      - assemble
     envs:
       - opts:
           is_expand: false
@@ -134,12 +114,24 @@ workflows:
         RELEASE_VARIANT: firebaseStagingApiStagingRelease
       - opts:
           is_expand: false
-        OUTPUT_NAME: sprintzerotemplate-app-release-firebaseStaging-apiStaging-signed
-      - opts:
-          is_expand: false
         GRADLE_TASK: |-
           assembleFirebaseStagingApiStagingRelease
           bundleFirebaseStagingApiStagingRelease
+  assembleDevAPKS:
+    before_run:
+      - assemble
+    envs:
+      - opts:
+          is_expand: false
+        DEBUG_VARIANT: firebaseStagingApiDevDebug
+      - opts:
+          is_expand: false
+        RELEASE_VARIANT: firebaseStagingApiDevRelease
+      - opts:
+          is_expand: false
+        GRADLE_TASK: |-
+          assembleFirebaseStagingApiDevRelease
+          bundleFirebaseStagingApiDevRelease
 meta:
   bitrise.io:
     stack: linux-docker-android-20.04
@@ -156,8 +148,8 @@ app:
       GRADLEW_PATH: ./gradlew
 trigger_map:
   - push_branch: release/*
-    workflow: assembleStagingAPK
+    workflow: assembleStagingAPKS
   - push_branch: hotfix/*
-    workflow: assembleProductionAPK
+    workflow: assembleProdAPKS
   - push_branch: develop
-    workflow: assembleStagingAPK
+    workflow: assembleDevAPKS
