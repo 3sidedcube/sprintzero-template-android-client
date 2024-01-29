@@ -117,6 +117,9 @@ Dir.chdir(local_temp_directory) do
         FileUtils.remove_entry("./scripts/build-new-project.rb")
     end
 
+    # Update readme
+    find_and_replace("See [TimberLoggingHelper.kt](app/src/main/java/com/cube/sprintzerotemplate/lib/util/TimberLoggingHelper.kt)", "See [TimberLoggingHelper.kt](app/src/main/java/#{new_package}/lib/util/TimberLoggingHelper.kt)")
+
     # Update package declarations
     find_and_replace("com.cube.sprintzerotemplate", new_package.gsub("/", "."))
 
