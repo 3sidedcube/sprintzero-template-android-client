@@ -116,7 +116,8 @@ workflows:
           bundleFirebaseStagingApiStagingRelease
 meta:
   bitrise.io:
-    stack: linux-docker-android-20.04
+    stack: osx-xcode-15.3.x
+    machine_type_id: g2.mac.large
 app:
   envs:
     - opts:
