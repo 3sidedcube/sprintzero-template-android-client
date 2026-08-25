@@ -134,4 +134,4 @@ trigger_map:
   - push_branch: hotfix/*
     workflow: assembleProdAPKS
   - push_branch: develop
-    workflow: assembleDevAPKS
+    workflow: assembleStagingAPKS
