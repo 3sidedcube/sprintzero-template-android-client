@@ -32,7 +32,7 @@ end
 
 # Function to replace all instances of com.cube.sprintzerotemplate
 def find_and_replace(search_string, replacement_string)
-    Dir.glob(File.join("./", '**', '*.{java,xml,gradle,kt}')) do |file|
+    Dir.glob(File.join("./", '**', '*.{java,xml,gradle,kts,kt,toml,md,yml}')) do |file|
         next unless File.file?(file)
 
         content = File.read(file)

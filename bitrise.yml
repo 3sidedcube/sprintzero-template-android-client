@@ -13,12 +13,9 @@ workflows:
           inputs:
             - file_content: |-
                 kotlin.code.style=official
-                org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-                android.defaults.buildfeatures.buildconfig=true
-                android.nonFinalResIds=false
-                android.nonTransitiveRClass=false
+                org.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8
                 android.useAndroidX=true
-                android.enableJetifier=true
+                android.nonTransitiveRClass=true
             - file_name: gradle.properties
       - set-java-version@1:
           inputs:

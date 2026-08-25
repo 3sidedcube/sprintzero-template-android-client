@@ -1,0 +1,5 @@
+# Historical finding: the original sprintzero-template Firebase API key was
+# committed in 93b6307e and later replaced with a placeholder (96a0b0dd).
+# It cannot be removed without rewriting history; rotate/restrict the key in
+# the Firebase console instead (see the template-refresh PR checklist).
+93b6307ead3b1e4728307c4cce4e6b7ff12ec9c8:app/src/firebaseStaging/google-services.json:gcp-api-key:18
