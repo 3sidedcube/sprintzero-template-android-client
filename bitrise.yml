@@ -116,7 +116,7 @@ workflows:
           bundleFirebaseStagingApiStagingRelease
 meta:
   bitrise.io:
-    stack: linux-docker-android-20.04
+    stack: linux-docker-android-22.04
 app:
   envs:
     - opts:
