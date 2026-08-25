@@ -14,11 +14,7 @@ import androidx.core.content.ContextCompat
  * @param onPermissionsGranted The callback containing requested permissions that were granted
  * @param onAllPermissionsDenied The callback for when all permissions where denied
  */
-class PermissionsHelper(
-	private val activity: AppCompatActivity,
-	private val onPermissionsGranted: (List<String>) -> Unit,
-	private val onAllPermissionsDenied: () -> Unit
-) {
+class PermissionsHelper(private val activity: AppCompatActivity, private val onPermissionsGranted: (List<String>) -> Unit, private val onAllPermissionsDenied: () -> Unit) {
 	/**
 	 * Permission result launcher
 	 */
