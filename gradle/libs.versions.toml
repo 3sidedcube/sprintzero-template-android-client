@@ -3,7 +3,7 @@
 #
 # Compatibility notes (verified Aug 2026):
 # - AGP 9.x has built-in Kotlin: do NOT add org.jetbrains.kotlin.android.
-# - Hilt 2.59 is the first release whose Gradle plugin supports AGP 9.
+# - Hilt 2.60.1+ is the team baseline for AGP 9 (2.59 was the minimum that worked).
 # - KSP >= 2.3.1 supports AGP 9 built-in Kotlin (decoupled from Kotlin version since 2.3.0).
 # - Crashlytics Gradle plugin >= 3.0.7 is required for AGP 9.
 # - Firebase BoM 34+ removed the -ktx artifacts; use the base artifacts.
