@@ -10,7 +10,7 @@ This repository provides a clean, well-organised template designed to speed up t
 - **Crash reporting**: Sentry, fully integrated with Timber. Production exceptions flow to Sentry with no extra wiring.
 - **Logging**: Timber, preconfigured (`TimberLoggingHelper.kt`).
 - **Lint**: ktlint enforced via a git pre-commit hook and in CI.
-- **CI**: GitHub Actions runs ktlint, unit tests, Android Lint and a debug build on every PR. Bitrise handles signed build distribution (develop/release/hotfix branch triggers, Jira build comments, Slack notifications).
+- **CI**: GitHub Actions runs ktlint, unit tests, Android Lint and a debug build on every PR. Bitrise handles signed build distribution (develop/release/hotfix branch triggers).
 - **Security**: gitleaks secret scanning and dependency review on every PR; Dependabot keeps the toolchain and dependencies fresh weekly.
 - **Governance**: team PR template and CODEOWNERS (`@3sidedcube/android`) included.
 
@@ -30,7 +30,7 @@ systemProp.SENTRY_DSN={{Your Sentry URL}}
 ```
 
 3. Install the git hook (see below).
-4. Configure Bitrise secrets: `JIRA_API_TOKEN`, `JIRA_BASE_URL`, `JIRA_EMAIL_USER`, `SLACK_WEBHOOK`, signing keystore.
+4. Upload the signing keystore to the Bitrise app (the bootstrap flow generates and uploads one automatically).
 
 ## Code formatting
 
@@ -68,4 +68,4 @@ Timber is installed and configured — see `TimberLoggingHelper.kt`. In producti
 | PR checks (ktlint, unit tests, lint, debug build) | `.github/workflows/pr-checks.yml` |
 | Secret scanning & dependency review | `.github/workflows/security.yml` |
 | Dependency updates | `.github/dependabot.yml` |
-| Signed builds, distribution, Jira/Slack | `bitrise.yml` |
+| Signed builds, distribution | `bitrise.yml` |
