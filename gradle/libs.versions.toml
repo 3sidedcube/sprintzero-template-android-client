@@ -1,0 +1,75 @@
+# Central version catalog for the SprintZero Android template.
+# Dependabot keeps these fresh — bump here, nowhere else.
+#
+# Compatibility notes (verified Aug 2026):
+# - AGP 9.x has built-in Kotlin: do NOT add org.jetbrains.kotlin.android.
+# - Hilt 2.59 is the first release whose Gradle plugin supports AGP 9.
+# - KSP >= 2.3.1 supports AGP 9 built-in Kotlin (decoupled from Kotlin version since 2.3.0).
+# - Crashlytics Gradle plugin >= 3.0.7 is required for AGP 9.
+# - Firebase BoM 34+ removed the -ktx artifacts; use the base artifacts.
+
+[versions]
+agp = "9.3.0"
+ksp = "2.3.6"
+hilt = "2.59"
+googleServices = "4.4.4"
+crashlyticsPlugin = "3.0.8"
+
+coreKtx = "1.16.0"
+appcompat = "1.7.0"
+lifecycle = "2.8.7"
+constraintlayout = "2.2.1"
+recyclerview = "1.4.0"
+fragmentKtx = "1.8.5"
+navigation = "2.8.5"
+material = "1.12.0"
+lottie = "6.6.0"
+timber = "5.0.1"
+sentry = "7.16.0"
+splashscreen = "1.0.1"
+firebaseBom = "34.18.0"
+
+junit = "4.13.2"
+androidxJunit = "1.2.1"
+espresso = "3.6.1"
+
+ktlintCli = "1.5.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "hilt" }
+
+sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
+sentry-android-timber = { group = "io.sentry", name = "sentry-android-timber", version.ref = "sentry" }
+
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyticsPlugin" }
