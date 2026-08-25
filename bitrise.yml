@@ -23,11 +23,10 @@ workflows:
       - install-missing-android-tools@3:
           inputs:
             - gradlew_path: $PROJECT_LOCATION/gradlew
-      - android-unit-test@1:
+      - gradle-runner@2:
+          title: Unit tests
           inputs:
-            - project_location: $PROJECT_LOCATION
-            - module: $MODULE
-            - variant: $RELEASE_VARIANT
+            - gradle_task: test${RELEASE_VARIANT}UnitTest
       - gradle-runner@2:
           inputs:
             - app_file_exclude_filter: |
