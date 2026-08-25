@@ -16,9 +16,10 @@ This repository provides a clean, well-organised template designed to speed up t
 
 ## New project setup
 
-1. Create the new repo from this template (or run the bootstrap flow — see `scripts/build-new-project.rb` until the Claude bootstrap project supersedes it).
-2. Replace `app/src/firebaseStaging/google-services.json` with the real staging config from the project's Firebase console, and add `app/src/firebaseLive/google-services.json` for the live flavor. **Real Firebase configs must never be committed to a public repo.**
-3. Add a local `gradle.properties` (gitignored):
+New repos are created from this template by the `bootstrap-android` Claude skill (interview → rename transform → verify → push). After bootstrap:
+
+1. Replace `app/src/firebaseStaging/google-services.json` with the real staging config from the project's Firebase console, and add `app/src/firebaseLive/google-services.json` for the live flavor. **Real Firebase configs must never be committed to a public repo.**
+2. Add a local `gradle.properties` (gitignored):
 
 ```
 kotlin.code.style=official
@@ -28,8 +29,8 @@ android.nonTransitiveRClass=true
 systemProp.SENTRY_DSN={{Your Sentry URL}}
 ```
 
-4. Install the git hook (see below).
-5. Configure Bitrise secrets: `JIRA_API_TOKEN`, `JIRA_BASE_URL`, `JIRA_EMAIL_USER`, `SLACK_WEBHOOK`, signing keystore.
+3. Install the git hook (see below).
+4. Configure Bitrise secrets: `JIRA_API_TOKEN`, `JIRA_BASE_URL`, `JIRA_EMAIL_USER`, `SLACK_WEBHOOK`, signing keystore.
 
 ## Code formatting
 
