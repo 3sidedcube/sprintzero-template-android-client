@@ -25,10 +25,6 @@ android {
 		vectorDrawables {
 			useSupportLibrary = true
 		}
-
-		// Provided via the local (gitignored) gradle.properties — see README.
-		val sentryDsn: String? = System.getProperty("SENTRY_DSN")
-		buildConfigField("String", "SENTRY_DSN", "\"$sentryDsn\"")
 	}
 
 	flavorDimensions += listOf("firebase", "api")
@@ -111,10 +107,8 @@ dependencies {
 	ksp(libs.dagger.compiler)
 	ksp(libs.hilt.compiler)
 
-	// Logging & crash reporting
+	// Logging
 	implementation(libs.timber)
-	implementation(libs.sentry.android)
-	implementation(libs.sentry.android.timber)
 
 	// Navigation
 	implementation(libs.androidx.navigation.fragment.ktx)
