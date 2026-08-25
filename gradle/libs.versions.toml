@@ -25,7 +25,6 @@ navigation = "2.9.8"
 material = "1.14.0"
 lottie = "6.7.1"
 timber = "5.0.1"
-sentry = "8.53.0"
 splashscreen = "1.2.0"
 firebaseBom = "34.18.0"
 
@@ -55,8 +54,6 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "hilt" }
 
-sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
-sentry-android-timber = { group = "io.sentry", name = "sentry-android-timber", version.ref = "sentry" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }

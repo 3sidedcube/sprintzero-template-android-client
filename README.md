@@ -7,7 +7,7 @@ This repository provides a clean, well-organised template designed to speed up t
 - **Build**: AGP 9.x with built-in Kotlin, Kotlin DSL build files, and a version catalog (`gradle/libs.versions.toml`) as the single source of truth for versions.
 - **DI**: Hilt (via KSP).
 - **Firebase**: Analytics, Crashlytics and Messaging, BoM-managed. The committed `google-services.json` is a **placeholder** — see setup below.
-- **Crash reporting**: Sentry, fully integrated with Timber. Production exceptions flow to Sentry with no extra wiring.
+- **Crash reporting**: Firebase Crashlytics — production errors logged via Timber flow to Crashlytics (`TimberProductionTree.kt`).
 - **Logging**: Timber, preconfigured (`TimberLoggingHelper.kt`).
 - **Lint**: ktlint enforced via a git pre-commit hook and in CI.
 - **CI**: GitHub Actions runs ktlint, unit tests, Android Lint and a debug build on every PR. Bitrise handles signed build distribution (develop/release/hotfix branch triggers).
@@ -26,7 +26,6 @@ kotlin.code.style=official
 org.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8
 android.useAndroidX=true
 android.nonTransitiveRClass=true
-systemProp.SENTRY_DSN={{Your Sentry URL}}
 ```
 
 3. Install the git hook (see below).
@@ -57,9 +56,9 @@ Two flavor dimensions: `firebase` (`firebaseStaging` / `firebaseLive`) and `api`
 
 The template uses Firebase for push notifications, analytics and crash reporting. Create the project under the 3SidedCube account and drop the per-flavor `google-services.json` files in as described above.
 
-## Sentry & Timber
+## Logging
 
-Timber is installed and configured — see `TimberLoggingHelper.kt`. In production, exceptions and crashes are sent to Sentry via the Timber integration; no additional calls required.
+Timber is installed and configured — see `TimberLoggingHelper.kt`. In production, error logs are recorded to Firebase Crashlytics via `TimberProductionTree`; non-error logs are no-ops.
 
 ## CI reference
 
