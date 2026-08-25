@@ -12,12 +12,12 @@ apply(from = "../ktlint.gradle")
 
 android {
 	namespace = "com.cube.sprintzerotemplate"
-	compileSdk = 36
+	compileSdk = 37
 
 	defaultConfig {
 		applicationId = "com.cube.sprintzerotemplate"
-		minSdk = 26
-		targetSdk = 36
+		minSdk = 30
+		targetSdk = 37
 		versionCode = 1
 		versionName = "0.1.0"
 
@@ -75,6 +75,21 @@ kotlin {
 	compilerOptions {
 		jvmTarget.set(JvmTarget.JVM_17)
 	}
+}
+
+// Dependency locking for OSV scanning. Lock only the shipping classpaths —
+// locking everything also locks per-variant AGP/KSP processor classpaths,
+// which resolve to nothing and bloat the lockfile past osv-scanner's limits.
+// Regenerate with: ./gradlew :app:dependencies --write-locks
+configurations.matching {
+	val isAppClasspath = it.name.endsWith("RuntimeClasspath") || it.name.endsWith("CompileClasspath")
+	val isProcessorClasspath = it.name.startsWith("_agp_internal") ||
+		it.name.endsWith("kaptClasspath") || it.name.endsWith("kspClasspath")
+	val isTestOrLintClasspath = it.name.contains("UnitTest") ||
+		it.name.contains("AndroidTest") || it.name.contains("LintChecks")
+	isAppClasspath && !isProcessorClasspath && !isTestOrLintClasspath
+}.configureEach {
+	resolutionStrategy.activateDependencyLocking()
 }
 
 dependencies {

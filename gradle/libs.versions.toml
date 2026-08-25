@@ -3,7 +3,7 @@
 #
 # Compatibility notes (verified Aug 2026):
 # - AGP 9.x has built-in Kotlin: do NOT add org.jetbrains.kotlin.android.
-# - Hilt 2.59 is the first release whose Gradle plugin supports AGP 9.
+# - Hilt 2.60.1+ is the team baseline for AGP 9 (2.59 was the minimum that worked).
 # - KSP >= 2.3.1 supports AGP 9 built-in Kotlin (decoupled from Kotlin version since 2.3.0).
 # - Crashlytics Gradle plugin >= 3.0.7 is required for AGP 9.
 # - Firebase BoM 34+ removed the -ktx artifacts; use the base artifacts.
@@ -17,11 +17,11 @@ crashlyticsPlugin = "3.0.8"
 
 coreKtx = "1.19.0"
 appcompat = "1.8.0"
-lifecycle = "2.8.7"
+lifecycle = "2.11.0"
 constraintlayout = "2.2.2"
 recyclerview = "1.4.0"
 fragmentKtx = "1.9.0"
-navigation = "2.8.5"
+navigation = "2.9.8"
 material = "1.14.0"
 lottie = "6.7.1"
 timber = "5.0.1"
@@ -33,7 +33,7 @@ junit = "4.13.2"
 androidxJunit = "1.3.0"
 espresso = "3.7.0"
 
-ktlintCli = "1.5.0"
+ktlintCli = "1.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
