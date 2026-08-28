@@ -51,6 +51,16 @@ This repo uses a single-module structure, with packages organised like a two-mod
 
 Two flavor dimensions: `firebase` (`firebaseStaging` / `firebaseLive`) and `api` (`apiDev` / `apiStaging` / `apiLive`). CI builds `firebaseStagingApiStagingDebug`; Bitrise workflows map branches to variants (see `bitrise.yml`).
 
+## Secrets
+
+API keys and other secrets live in a gitignored `secret.properties` at the repo root, exposed to code as `BuildConfig` fields. Set it up with:
+
+```
+cp secret-examples.properties secret.properties
+```
+
+then fill in the real values. When `secret.properties` is absent the build falls back to the committed `secret-examples.properties` placeholders, so fresh clones and CI build without setup. To add a secret: add the row to **both** files (placeholder in the example, real value locally) and wire it in `app/build.gradle.kts` as a `buildConfigField` alongside `EXAMPLE_API_KEY`. Never commit `secret.properties` or put real values in the example file.
+
 ## Firebase integration
 
 The template uses Firebase for push notifications, analytics and crash reporting. Create the project under the 3SidedCube account and drop the per-flavor `google-services.json` files in as described above.

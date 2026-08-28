@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,6 +7,15 @@ plugins {
 	alias(libs.plugins.hilt)
 	alias(libs.plugins.google.services)
 	alias(libs.plugins.firebase.crashlytics)
+}
+
+// Secrets: copy secret-examples.properties to secret.properties (gitignored) and fill in
+// real values. Fresh clones and CI fall back to the example placeholders so the build
+// stays green; wire each secret in as a buildConfigField below.
+val secrets = Properties().apply {
+	val secretsFile = rootProject.file("secret.properties").takeIf { it.exists() }
+		?: rootProject.file("secret-examples.properties")
+	secretsFile.inputStream().use { load(it) }
 }
 
 android {
@@ -23,6 +33,8 @@ android {
 		vectorDrawables {
 			useSupportLibrary = true
 		}
+
+		buildConfigField("String", "EXAMPLE_API_KEY", "\"${secrets.getProperty("EXAMPLE_API_KEY")}\"")
 	}
 
 	flavorDimensions += listOf("firebase", "api")
