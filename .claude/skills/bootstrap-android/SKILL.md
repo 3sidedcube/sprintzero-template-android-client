@@ -46,7 +46,7 @@ touching GitHub — a bad package name poisons every file.
 | Figma project | `<figma.com link>` | Optional. Never invent one. When given, record the design-file link in the client CLAUDE.md header (Step 3) so agents (and the Figma MCP tooling) can find the designs. |
 | API environments | `dev + staging + live` (all on) | Multi-select with **all three toggled on** — the user switches off the ones they don't want (any non-empty subset is valid). The template ships all three; the transform removes each deselected environment's flavor and Bitrise workflow and retargets branch triggers to the nearest surviving workflow (`--api-envs <kept,envs>`). Firebase is **always** exactly staging + live regardless (2 Firebase projects by policy — do not ask). |
 | API base URLs (per env) | `https://api.staging...` | Optional; template placeholders remain if unknown. One per chosen API environment (`--staging-url` / `--live-url` / `--dev-url`). |
-| Firebase projects | `create now` / `manual` | Two per app — `<appname>-staging` + `<appname>-live` — always. If firebase-tools is authenticated (`firebase login:list`), offer to create both under the 3SC org now (Step 7); otherwise record the intended ids for the checklist. |
+| Firebase projects | `create now` / `manual` | Ask this first. On `manual`, the checklist records the policy default — `<appname>-staging` + `<appname>-live` — and no environment question is asked. On `create now` (requires firebase-tools authenticated — `firebase login:list`), follow up with a **multi-select of Firebase environments**: staging + live toggled on, dev off, any non-empty subset valid. The transform mirrors the selection in the firebase flavor dimension (`--firebase-envs <kept,envs>` — dev adds the `firebaseDev` flavor + placeholder config; deselected envs are removed and bitrise.yml variant names remapped), and Step 7 creates one project per selected environment. |
 | GA account id | `56643500` | **Paired with the Firebase question — only asked when Firebase = `create now`** (CLI-created projects need GA linked by the agent in Step 7; the console create-flow handles it on the manual path). Default: **3 Sided Cube's own GA account `56643500`** (name verified in the GA console, 2026-08-25) — analytics start under 3SC and get transferred to the client's account later when required (GA4 property move). Override only if the client should own analytics from day one — then discover their id from an existing project's `analyticsDetails` (see Step 7); never guess a client id. |
 | Bitrise app | `create now` / `manual` | If the Bitrise PAT is available (macOS keychain, `security find-generic-password -s bitrise-pat -w`), offer to register the app, wire the webhook and generate/upload the signing keystore now (Step 8); otherwise the checklist keeps the manual Bitrise items. |
 
@@ -97,7 +97,7 @@ the renames as freehand edits:
 ```
 python3 scripts/transform.py --repo <clone> \
   --display-name "<Display Name>" --package <package> \
-  [--api-envs dev,staging,live] \
+  [--api-envs dev,staging,live] [--firebase-envs dev,staging,live] \
   [--staging-url <url>] [--live-url <url>] [--dev-url <url>]
 ```
 
@@ -106,7 +106,13 @@ default is a no-op. Pass the kept subset from the interview: deselected
 environments have their `api<Env>` flavor and `assemble<Env>APKS` Bitrise
 workflow removed, and any branch trigger left pointing at a removed workflow
 is retargeted to the nearest surviving one (staging, then live, then dev).
-All idempotent on re-runs.
+
+`--firebase-envs` defaults to `staging,live` — again the template's flavors,
+so the default is a no-op. `dev` in the set adds the `firebaseDev` flavor and
+seeds a placeholder `google-services.json` for it (regenerate the lockfiles
+afterwards — the report warns about this); deselecting staging/live removes
+the flavor and its source set and remaps `bitrise.yml` variant/task names to
+a surviving firebase flavor. All idempotent on re-runs.
 
 Run it with **Python 3.11+** when available — the TOML parse check needs
 `tomllib`. On macOS the system `python3` is often 3.9; prefer a Homebrew
@@ -207,12 +213,16 @@ false, skip — the checklist keeps the manual Firebase items. Firebase
 failures never block the bootstrap: report what failed and fall back to the
 manual checklist items.
 
-1. Create both projects (no `-o` flag — 3SC does not parent projects under a
-   GCP organization node; decided 2026-08-25, matching the existing estate):
+1. Create one project per Firebase environment selected at the interview —
+   `<appname>-<env>`, default staging + live (no `-o` flag — 3SC does not
+   parent projects under a GCP organization node; decided 2026-08-25,
+   matching the existing estate):
 
    ```
    firebase projects:create <appname>-staging -n "<Display Name> Staging"
    firebase projects:create <appname>-live    -n "<Display Name> Live"
+   # plus, when dev was selected:
+   firebase projects:create <appname>-dev     -n "<Display Name> Dev"
    ```
 
    GCP caps project **display names at 30 characters** — if
@@ -226,7 +236,8 @@ manual checklist items.
    one silently. Creation counts against the authenticated user's project
    quota, so never create throwaway projects.
 
-2. Register the Android app in each (both flavors share one applicationId):
+2. Register the Android app in each selected project (all flavors share one
+   applicationId; repeat per environment):
 
    ```
    firebase apps:create android "<Display Name>" -a <package> --project <appname>-staging
@@ -281,6 +292,10 @@ manual checklist items.
    firebase apps:sdkconfig android <stagingAppId> --project <appname>-staging -o app/src/firebaseStaging/google-services.json
    firebase apps:sdkconfig android <liveAppId>    --project <appname>-live    -o app/src/firebaseLive/google-services.json
    ```
+
+   When dev was selected, the transform seeded a placeholder at
+   `app/src/firebaseDev/google-services.json` — delete it and fetch the real
+   dev config the same way.
 
    Sanity-check both files (project_id and package_name match), then prove
    they parse in the build:

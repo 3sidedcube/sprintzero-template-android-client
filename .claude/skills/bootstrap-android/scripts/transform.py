@@ -29,6 +29,11 @@ What it does (the rename inventory from the phase-2 handover):
      left pointing at a removed workflow are retargeted to the nearest
      surviving one. A legacy add path covers older-era clones missing apiDev.
   5. Optionally swaps dev/staging/live API_URL placeholder values.
+  5b. Firebase environments (--firebase-envs, default staging,live — the
+     template's flavors, a no-op): any non-empty subset of dev,staging,live.
+     'dev' ADDS a firebaseDev flavor plus a placeholder google-services.json
+     source set; deselecting staging/live REMOVES the flavor and its source
+     set, remapping bitrise.yml variant/task names to a surviving flavor.
   6. Deletes scripts/build-new-project.rb (no-op safeguard; gone from the template).
   7. Deletes .claude/skills/bootstrap-android — clients must not inherit the
      skill that creates clients (.claude is also excluded from the walk so the
@@ -276,6 +281,108 @@ def remove_api_env(repo: Path, env: str, report: dict) -> None:
             report["api_envs"].append(f"{wf} workflow removed from bitrise.yml")
 
 
+FIREBASE_FLAVORS = {"dev": "firebaseDev", "staging": "firebaseStaging",
+                    "live": "firebaseLive"}
+
+FIREBASE_DEV_BLOCK = (
+    '\t\tcreate("firebaseDev") {\n'
+    '\t\t\tdimension = "firebase"\n'
+    '\t\t}\n'
+)
+
+
+def add_firebase_dev(repo: Path, report: dict) -> None:
+    """Add the firebaseDev flavor and seed its placeholder google-services.json
+    from an existing flavor's placeholder. Idempotent."""
+    gradle = repo / "app" / "build.gradle.kts"
+    if gradle.exists():
+        text = gradle.read_text(encoding="utf-8")
+        if 'create("firebaseDev")' not in text:
+            for anchor_flavor in ("firebaseStaging", "firebaseLive"):
+                anchor = f'\t\tcreate("{anchor_flavor}") {{'
+                if anchor in text:
+                    gradle.write_text(
+                        text.replace(anchor, FIREBASE_DEV_BLOCK + anchor, 1),
+                        encoding="utf-8")
+                    report["firebase_envs"].append(
+                        "firebaseDev flavor added to app/build.gradle.kts")
+                    break
+            else:
+                report["warnings"].append(
+                    "could not locate a firebase flavor block to anchor "
+                    "firebaseDev — add the flavor manually")
+    dev_config = repo / "app" / "src" / "firebaseDev" / "google-services.json"
+    if not dev_config.exists():
+        for src_flavor in ("firebaseStaging", "firebaseLive"):
+            src = repo / "app" / "src" / src_flavor / "google-services.json"
+            if src.exists():
+                dev_config.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, dev_config)
+                report["firebase_envs"].append(
+                    "placeholder google-services.json seeded for firebaseDev")
+                break
+        else:
+            report["warnings"].append(
+                "no placeholder google-services.json found to seed firebaseDev "
+                "— add one manually")
+    report["warnings"].append(
+        "firebaseDev variants are not covered by the committed lockfile — "
+        "regenerate with ./gradlew :app:dependencies --write-locks")
+
+
+def remove_firebase_env(repo: Path, env: str, report: dict) -> None:
+    """Remove a deselected Firebase environment: flavor block + source set."""
+    flavor = FIREBASE_FLAVORS[env]
+    gradle = repo / "app" / "build.gradle.kts"
+    if gradle.exists():
+        text = gradle.read_text(encoding="utf-8")
+        block_re = re.compile(
+            r'\t\tcreate\("' + flavor + r'"\) \{\n(?:\t\t\t.*\n)*?\t\t\}\n')
+        new = block_re.sub("", text, count=1)
+        if new != text:
+            gradle.write_text(new, encoding="utf-8")
+            report["firebase_envs"].append(
+                f"{flavor} flavor removed from app/build.gradle.kts")
+        else:
+            report["warnings"].append(
+                f"could not locate the {flavor} flavor block to remove — "
+                f"remove it manually if present")
+    src_dir = repo / "app" / "src" / flavor
+    if src_dir.exists():
+        if not (in_git_repo(repo) and run_git(repo, "rm", "-r", "-q",
+                                              str(src_dir.relative_to(repo)))):
+            shutil.rmtree(src_dir)
+        report["firebase_envs"].append(f"app/src/{flavor} source set removed")
+
+
+def remap_firebase_in_bitrise(repo: Path, kept: set, report: dict) -> None:
+    """bitrise.yml variant/task names embed firebase flavor names — remap any
+    reference to a removed flavor onto the preferred surviving one."""
+    bitrise = repo / "bitrise.yml"
+    if not bitrise.exists():
+        return
+    preference = [e for e in ("staging", "live", "dev") if e in kept]
+    if not preference:
+        return
+    target = FIREBASE_FLAVORS[preference[0]]
+    text = bitrise.read_text(encoding="utf-8")
+    changed = False
+    for env, flavor in FIREBASE_FLAVORS.items():
+        if env in kept:
+            continue
+        for needle, repl in ((flavor, target),
+                             (flavor[0].upper() + flavor[1:],
+                              target[0].upper() + target[1:])):
+            if needle in text:
+                text = text.replace(needle, repl)
+                changed = True
+        if changed:
+            report["firebase_envs"].append(
+                f"bitrise.yml references remapped {flavor} -> {target}")
+    if changed:
+        bitrise.write_text(text, encoding="utf-8")
+
+
 def retarget_triggers(repo: Path, report: dict) -> None:
     """Point any branch trigger at a workflow that still exists. Preference
     order approximates the branch's intent: staging, then live, then dev."""
@@ -372,6 +479,11 @@ def main() -> int:
                          "'dev,staging,live'. The template ships all three "
                          "(the default is a no-op); deselected environments "
                          "have their flavor and Bitrise workflow removed")
+    ap.add_argument("--firebase-envs", default="staging,live",
+                    help="Firebase environments to keep, any non-empty subset "
+                         "of 'dev,staging,live'. The template ships staging + "
+                         "live (the default is a no-op); 'dev' adds the "
+                         "firebaseDev flavor, deselected ones are removed")
     ap.add_argument("--verify-only", action="store_true",
                     help="run only the verification pass")
     args = ap.parse_args()
@@ -387,6 +499,12 @@ def main() -> int:
             print(f"error: --{env}-url given but '{env}' is not in --api-envs",
                   file=sys.stderr)
             return 2
+    firebase_envs = sorted({e.strip().lower()
+                            for e in args.firebase_envs.split(",") if e.strip()})
+    if not firebase_envs or not set(firebase_envs) <= set(FIREBASE_FLAVORS):
+        print("error: --firebase-envs must be a non-empty subset of "
+              "'dev,staging,live'", file=sys.stderr)
+        return 2
 
     repo: Path = args.repo.resolve()
     if not repo.is_dir():
@@ -409,7 +527,7 @@ def main() -> int:
         "package": package, "pascal": pascal, "display": args.display_name,
         "replacements": {}, "files_edited": set(), "moved": [],
         "renamed": [], "deleted": [], "api_urls": [], "api_envs": [],
-        "warnings": [], "survivors": [], "parse_errors": [],
+        "firebase_envs": [], "warnings": [], "survivors": [], "parse_errors": [],
     }
 
     if not args.verify_only:
@@ -470,6 +588,17 @@ def main() -> int:
             report["warnings"].append(
                 "api environments were removed — review docs/ for references "
                 "to the removed flavors/workflows")
+
+        # -- 6b. Firebase environments (template ships staging + live).
+        if "dev" in firebase_envs:
+            add_firebase_dev(repo, report)
+        for env in sorted(set(FIREBASE_FLAVORS) - set(firebase_envs)):
+            remove_firebase_env(repo, env, report)
+        if set(firebase_envs) != {"live", "staging"}:
+            report["warnings"].append(
+                "firebase environments changed from the template default — "
+                "review docs/ and CLAUDE.md variant/task-name references")
+        remap_firebase_in_bitrise(repo, set(firebase_envs), report)
         retarget_triggers(repo, report)
 
         # -- 7. API URL placeholders (optional).
