@@ -8,8 +8,6 @@ plugins {
 	alias(libs.plugins.firebase.crashlytics)
 }
 
-apply(from = "../ktlint.gradle")
-
 android {
 	namespace = "com.cube.sprintzerotemplate"
 	compileSdk = 37
@@ -51,7 +49,8 @@ android {
 			proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 		}
 		release {
-			isMinifyEnabled = false
+			isMinifyEnabled = true
+			isShrinkResources = true
 			proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 		}
 	}
@@ -77,6 +76,8 @@ kotlin {
 // locking everything also locks per-variant AGP/KSP processor classpaths,
 // which resolve to nothing and bloat the lockfile past osv-scanner's limits.
 // Regenerate with: ./gradlew :app:dependencies --write-locks
+val ktlint = configurations.create("ktlint")
+
 configurations.matching {
 	val isAppClasspath = it.name.endsWith("RuntimeClasspath") || it.name.endsWith("CompileClasspath")
 	val isProcessorClasspath = it.name.startsWith("_agp_internal") ||
@@ -124,4 +125,35 @@ dependencies {
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
+
+	// ktlint CLI (runs via the ktlint/ktlintFormat tasks below)
+	ktlint("com.pinterest.ktlint:ktlint-cli:${libs.versions.ktlintCli.get()}") {
+		attributes {
+			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
+		}
+	}
+}
+
+tasks.register<JavaExec>("ktlint") {
+	group = "verification"
+	description = "Check Kotlin code style."
+	classpath = ktlint
+	mainClass = "com.pinterest.ktlint.Main"
+	jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
+	// see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information
+	args("src/**/*.kt", "**.kts", "!**/build/**")
+}
+
+tasks.named("check") {
+	dependsOn("ktlint")
+}
+
+tasks.register<JavaExec>("ktlintFormat") {
+	group = "formatting"
+	description = "Fix Kotlin code style deviations."
+	classpath = ktlint
+	mainClass = "com.pinterest.ktlint.Main"
+	jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
+	// see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information
+	args("-F", "src/**/*.kt", "**.kts", "!**/build/**")
 }

@@ -19,7 +19,8 @@ every future client inherits what's here.
 | minSdk | 30 | `app/build.gradle.kts` |
 
 Versions live **only** in `gradle/libs.versions.toml` (Dependabot keeps them
-fresh) — including ktlint-cli, which `ktlint.gradle` reads from the catalog.
+fresh) — including ktlint-cli, which the ktlint tasks in `app/build.gradle.kts`
+read from the catalog.
 
 ## Build
 
