@@ -273,12 +273,47 @@ force-push, never rewrite history.
    is the working branch: features branch off it and PRs merge into it
    (Bitrise maps develop/release/hotfix triggers). Do **not** rename the
    default branch to `develop`.
-2. Branch protection on **both** `master` and `develop`: require the
-   `PR Checks` workflow job — the status-check context is the job display
-   name (`ktlint`; CI deliberately runs nothing else) — plus one review.
-   No force pushes, no deletions.
-3. Repo topics: `android` + a client tag.
-4. Confirm the "template repository" flag is **off** on the new repo.
+2. Branch protection on **both** `master` and `develop` — the status-check
+   context is the PR Checks job's display name (`ktlint`; CI deliberately
+   runs nothing else). Setting a context before its workflow has ever run
+   is fine — GitHub treats it as an expected check on future PRs:
+
+   ```
+   gh api -X PUT repos/3sidedcube/<repo>/branches/<branch>/protection \
+     --input - <<'JSON'
+   {"required_status_checks": {"strict": false, "contexts": ["ktlint"]},
+    "enforce_admins": false,
+    "required_pull_request_reviews": {"required_approving_review_count": 1},
+    "restrictions": null,
+    "allow_force_pushes": false,
+    "allow_deletions": false}
+   JSON
+   ```
+
+   `enforce_admins: false` is **deliberate, not laxity**: Steps 7 and 8
+   push follow-up commits (Firebase configs) straight to `master`, which
+   only works because the bootstrap runner is the repo's creator/admin and
+   admins bypass the PR requirement. Do not "harden" it to `true` — that
+   breaks the later steps. The one-review requirement pairs with the
+   template's CODEOWNERS (`* @3sidedcube/android`), which routes those
+   reviews to the Android team.
+3. Repo topics — `android` plus a kebab-case client tag:
+
+   ```
+   gh api -X PUT repos/3sidedcube/<repo>/topics -f "names[]=android" -f "names[]=<client-tag>"
+   ```
+
+4. Confirm the "template repository" flag is **off**
+   (`gh api repos/3sidedcube/<repo> --jq .is_template` → `false`; generated
+   repos have it off by default — this is a check, not a change).
+5. All other repo settings (merge policy, delete-branch-on-merge, wikis…)
+   deliberately stay at org defaults — don't configure them here.
+6. **Verify the first CI run goes green** before moving on: the push in
+   Step 5 triggered PR Checks on `master` — watch it
+   (`gh run list --repo 3sidedcube/<repo> --branch master --limit 1`, then
+   `gh run watch <id> --exit-status`). A red ktlint run means the transform
+   broke style — fix forward and push before continuing; the handover
+   report states the CI result.
 
 ## Step 7 — Firebase projects (optional automation)
 
