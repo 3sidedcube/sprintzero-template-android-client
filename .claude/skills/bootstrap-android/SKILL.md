@@ -61,10 +61,30 @@ follow the `gh-protocol` skill first.
    `security find-generic-password -s bitrise-pat -w` (never print the
    value) exits 0 when the shared PAT is in the macOS keychain. Missing
    does **not** stop the interview — record the result and surface it on
-   the Bitrise question so `create now` is offered honestly. Fix path: add
-   the PAT to the keychain
-   (`security add-generic-password -s bitrise-pat -a bitrise -w`), and
-   re-check.
+   the Bitrise question so `create now` is offered honestly. Fix path: get
+   the shared PAT from the team 1Password, then add it to the keychain
+   (`security add-generic-password -s bitrise-pat -a bitrise -w` — it
+   prompts for the value), and re-check.
+
+### When a check fails
+
+Don't just report and stop — give the user the exact setup path and let
+them choose how to proceed (question UI, one per failing check):
+
+- **Hard requirements (items 1–3)** block everything; there is no skip.
+  Options: **Fix now — re-check** (give the instructions below, wait for
+  the user to confirm, re-run the check; loop until green or abort) /
+  **Abort**. Setup guidance:
+  - `gh` missing → `brew install gh`
+  - unauthenticated → run `gh auth login` in a terminal (browser flow)
+  - org membership not `active` → not self-serve: a `3sidedcube` org owner
+    must invite the account — say so and name who to ask if known
+  - missing `repo` scope → `gh auth refresh -h github.com -s repo`
+- **Optional automations (items 4–5)** never block. Options: **Set up now —
+  re-check** (walk them through the item's fix path above) / **Skip — use
+  the manual path** (the interview then presents that automation's
+  `create now` as unavailable, exactly as the table describes; the
+  setup-checklist issue keeps the manual items).
 
 **Why `gh` and not the GitHub MCP** (reviewed 2026-08-28 against the
 official `github/github-mcp-server` source, 117 tools): the MCP has no
