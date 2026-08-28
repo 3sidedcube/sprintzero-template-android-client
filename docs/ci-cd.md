@@ -27,4 +27,4 @@ The release keystore lives in Bitrise, not the repository; the bootstrap flow ge
 
 ## Creating a client repository
 
-New client repos are generated from this template by the `bootstrap-android` skill (interview → rename transform → verify → push), which also handles the Bitrise app, keystore and branch protection.
+New client repos are generated from this template by the `bootstrap-android` skill (interview → rename transform → verify → push), which also handles the Bitrise app, keystore and branch protection. The skill is version-controlled in this repository at [`.claude/skills/bootstrap-android`](../.claude/skills/bootstrap-android), alongside the rename transform script it drives.

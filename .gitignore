@@ -11,3 +11,4 @@
 local.properties
 /gradle.properties
 secret.properties
+.claude/settings.local.json
