@@ -5,9 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.cube.sprintzerotemplate.lib.util.AnalyticsHelper
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * BootActivity is the main activity that gets launched when the device boots up.
@@ -26,6 +26,7 @@ class BootActivity : AppCompatActivity() {
 		lifecycleScope.launch {
 			delay(3000L.milliseconds)
 
+			// TODO Drive this from the user's analytics consent preference instead of always-on
 			AnalyticsHelper.setupAnalytics(true)
 
 			startActivity(MainTabbedActivity.getIntent(this@BootActivity))

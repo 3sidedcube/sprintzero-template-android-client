@@ -9,7 +9,7 @@ import com.google.firebase.analytics.logEvent
  * This class include the functions we're going to use for analytics
  */
 object AnalyticsHelper {
-	private val firebaseAnalytics: FirebaseAnalytics = Firebase.analytics
+	private val firebaseAnalytics: FirebaseAnalytics by lazy { Firebase.analytics }
 
 	/**
 	 * Method to enable/disable analytics based on preference
