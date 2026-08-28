@@ -26,7 +26,10 @@ What it does (the rename inventory from the phase-2 handover):
      the apiDev product flavor plus the assembleDevAPKS Bitrise workflow.
   5. Optionally swaps dev/staging/live API_URL placeholder values.
   6. Deletes scripts/build-new-project.rb (no-op safeguard; gone from the template).
-  6. Verifies: zero surviving template tokens (any case), TOML/JSON/YAML parse.
+  7. Deletes .claude/skills/bootstrap-android — clients must not inherit the
+     skill that creates clients (.claude is also excluded from the walk so the
+     skill's own template tokens never trip the verifier).
+  8. Verifies: zero surviving template tokens (any case), TOML/JSON/YAML parse.
 
 Exits non-zero and prints a report if anything survives. Idempotent-ish: a
 second run on an already-transformed repo is a no-op that still passes.
@@ -52,7 +55,7 @@ TEXT_EXTS = {
     ".kt", ".kts", ".xml", ".toml", ".md", ".yml", ".yaml", ".rb",
     ".json", ".properties", ".pro", ".gradle", ".txt", ".gitignore",
 }
-SKIP_DIRS = {".git", ".gradle", "build", ".idea", "node_modules"}
+SKIP_DIRS = {".git", ".gradle", "build", ".idea", "node_modules", ".claude"}
 
 # Validation regexes — package per Android rules. PascalCase came from the
 # original ruby script but now also allows digits (legal in Kotlin class
@@ -423,6 +426,19 @@ def main() -> int:
             if not (in_git_repo(repo) and run_git(repo, "rm", "-q", str(rb.relative_to(repo)))):
                 rb.unlink()
             report["deleted"].append(str(rb.relative_to(repo)))
+
+        # -- 10. Delete the bootstrap skill — clients must not inherit the
+        # skill that creates client repos.
+        skill_dir = repo / ".claude" / "skills" / "bootstrap-android"
+        if skill_dir.exists():
+            if not (in_git_repo(repo) and run_git(repo, "rm", "-r", "-q", str(skill_dir.relative_to(repo)))):
+                shutil.rmtree(skill_dir)
+            report["deleted"].append(str(skill_dir.relative_to(repo)))
+            # git rm leaves the empty dirs on disk, and prune_empty_dirs
+            # deliberately skips .claude (SKIP_DIRS) — tidy them here.
+            for parent in (skill_dir.parent, skill_dir.parent.parent):
+                if parent.is_dir() and not any(parent.iterdir()):
+                    parent.rmdir()
 
     ok = verify(repo, report)
 
