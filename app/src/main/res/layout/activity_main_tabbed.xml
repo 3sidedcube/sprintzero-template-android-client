@@ -25,7 +25,7 @@
 		android:background="@color/white"
 		app:menu="@menu/bottom_nav"
 		app:labelVisibilityMode="labeled"
-		app:itemIconSize="24dp"
+		app:itemIconSize="@dimen/bottom_nav_icon_size"
 		app:itemIconTint="@color/bottom_nav_item_tint_selector"
 		app:itemTextColor="@color/bottom_nav_item_tint_selector"
 		app:itemActiveIndicatorStyle="@style/Widget.SprintZeroTemplate.BottomNavIndicator" />

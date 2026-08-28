@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Design tokens — all layout dimensions reference these; never hardcode dp in
+     layouts (see CLAUDE.md "Code standards"). Text sizes use sp, never dp. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+	<!-- Generic spacing scale — extend in steps as needed -->
+	<dimen name="spacing_4dp">4dp</dimen>
+	<dimen name="spacing_8dp">8dp</dimen>
+	<dimen name="spacing_12dp">12dp</dimen>
+	<dimen name="spacing_16dp">16dp</dimen>
+	<dimen name="spacing_24dp">24dp</dimen>
+	<dimen name="spacing_32dp">32dp</dimen>
+	<dimen name="spacing_48dp">48dp</dimen>
+
+	<!-- Corner radii -->
+	<dimen name="radius_s">4dp</dimen>
+	<dimen name="radius_m">8dp</dimen>
+	<dimen name="radius_l">16dp</dimen>
+
+	<!-- Component tokens: <component>_<purpose> -->
+	<dimen name="bottom_nav_icon_size">24dp</dimen>
+
+	<!-- Minimum tappable size (WCAG 2.5.5 / Material guideline) -->
+	<dimen name="min_touch_target">48dp</dimen>
+</resources>

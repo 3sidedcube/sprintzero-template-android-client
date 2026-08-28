@@ -39,6 +39,61 @@ Secrets follow the `secret.properties` (gitignored) / `secret-examples.propertie
 (committed placeholders, automatic fallback) pattern — see README. Real values
 never go in the example file.
 
+## Code standards
+
+- **Kotlin only** for new code. Defaults: ViewBinding + ViewModel, Hilt for DI.
+  **No event bus** — prefer Flow/LiveData/direct callbacks.
+- **Package split:** `app` = UI flow (activities/fragments/adapters), `lib` =
+  non-UI logic and reusable UI (see README "Repo structure").
+- **`.editorconfig` is the style source of truth** (tabs, max line 200,
+  `ktlint_code_style = android_studio`); ktlint enforces it in CI and the
+  pre-commit hook. Avoid local (inline) functions that capture enclosing
+  state — prefer a private function on the class (team review convention).
+- **No hardcoded user-visible strings** in layouts or Kotlin — including
+  `contentDescription`, hints and dialog text. Everything goes through
+  `res/values/strings.xml`. (CMS-driven clients swap the store, not the rule.)
+- **No hardcoded colours or dimensions** in layouts or Kotlin — every colour
+  is a `@color/` token, every dimension a `@dimen/` token (starter scale in
+  `app/src/main/res/values/dimens.xml`). Naming: `spacing_<N>dp` for the
+  generic scale, `<feature>_<purpose>` / `<component>_<purpose>` for specific
+  tokens. Text sizes use `sp`, never `dp`. Pre-PR check:
+  `grep -rE '#[0-9A-Fa-f]{6,8}|"[0-9]+dp"' app/src/main/res/layout/` should
+  turn up nothing new.
+
+## Accessibility requirements (WCAG 2.x AA)
+
+Not optional — factor the time into estimates. For every new screen,
+component and modal:
+
+- **TalkBack:** meaningful `contentDescription` on every interactive element;
+  decorative images get `android:importantForAccessibility="no"`; group
+  related views so a row reads as one announcement; modals/bottom sheets
+  announce themselves and offer a focusable close button (swipe-to-dismiss
+  alone is not accessible); focus order follows visual reading order; custom
+  views implement an accessibility delegate. Verify on a real device with
+  TalkBack on.
+- **Font scaling:** text sizes in `sp` only; every screen scrolls; no fixed
+  heights on text-bearing views; avoid `maxLines` + ellipsize on critical
+  content; must stay usable at 200% font scale (WCAG 1.4.4).
+- **Touch targets:** ≥ 48×48dp for anything tappable (WCAG 2.5.5).
+- **Contrast:** ≥ 4.5:1 for normal text, ≥ 3:1 for large text and UI
+  components (WCAG 1.4.3); pull colours from `colors.xml` tokens.
+- **Both orientations:** every screen works in portrait and landscape —
+  never lock orientation.
+
+Pre-PR self-check: TalkBack walk of the flow → max font size (Display AND
+Accessibility settings) → rotate to landscape → tap targets ≥ 48dp → the
+ticket's WCAG criteria.
+
+## When making changes
+
+- **New dependency** → version in `gradle/libs.versions.toml`, reference via
+  `libs.xxx`, regenerate the lockfile (`./gradlew :app:dependencies --write-locks`).
+- **New permission / activity / deep link** → `app/src/main/AndroidManifest.xml`;
+  mind `android:exported`, `parentActivityName` and theme.
+- **Flavor-specific resource** → `app/src/<flavor>/…` (e.g. the per-flavor
+  `google-services.json`).
+
 ## Non-obvious decisions (do not "clean up")
 
 - **No `org.jetbrains.kotlin.android` plugin** — AGP 9 built-in Kotlin is used
