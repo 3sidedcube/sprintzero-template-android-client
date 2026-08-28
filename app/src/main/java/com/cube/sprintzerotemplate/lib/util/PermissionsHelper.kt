@@ -1,6 +1,7 @@
 package com.cube.sprintzerotemplate.lib.util
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
@@ -104,5 +105,6 @@ class PermissionsHelper private constructor(caller: ActivityResultCaller, privat
 	 * Whether a permission exists on this OS version; inapplicable ones are treated as granted
 	 * rather than requested (the system would auto-deny a permission it doesn't know)
 	 */
+	@SuppressLint("InlinedApi") // The constant is inlined at compile time, and pre-33 devices never see it thanks to the SDK_INT check
 	private fun isApplicable(permission: String) = permission != Manifest.permission.POST_NOTIFICATIONS || Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 }

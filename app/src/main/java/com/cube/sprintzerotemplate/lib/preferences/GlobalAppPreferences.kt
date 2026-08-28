@@ -2,6 +2,7 @@ package com.cube.sprintzerotemplate.lib.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 /**
  * Class providing singleton access to user shared preference values that are global to the application
@@ -28,7 +29,7 @@ object GlobalAppPreferences {
 	 * Clear all stored shared preferences
 	 */
 	fun clearAll() {
-		preferences.edit().clear().apply()
+		preferences.edit { clear() }
 	}
 
 	/**
@@ -41,5 +42,5 @@ object GlobalAppPreferences {
 	 */
 	var testPreference: String?
 		get() = preferences.getString(KEY_TEST_PREFERENCE, null)
-		set(value) = preferences.edit().putString(KEY_TEST_PREFERENCE, value).apply()
+		set(value) = preferences.edit { putString(KEY_TEST_PREFERENCE, value) }
 }
