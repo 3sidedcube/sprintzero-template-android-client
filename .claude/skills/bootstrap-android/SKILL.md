@@ -54,6 +54,33 @@ touching GitHub — a bad package name poisons every file.
 exit 2 on bad input — but validate in conversation first so the user isn't
 told after the repo exists.
 
+### Review & confirm (nothing is created until this passes)
+
+After the answers are collected and validated, play the whole configuration
+back and get an explicit go/no-go. This is the last exit before the skill
+creates real infrastructure (repo, Firebase projects, Bitrise app).
+
+1. **Show the full selection summary as its own chat message** — every
+   parameter with its final value, including the derived and defaulted ones
+   the user never typed: the PascalCase name, the exact `transform.py` flags
+   (`--api-envs` / `--firebase-envs` / URL swaps), which automations will run
+   (Firebase environments + GA account, Bitrise) and which items will land on
+   the manual checklist instead. The summary must be a completed message the
+   user has actually read — never fold it into an AskUserQuestion `question`
+   text or option preview, which truncate and can vanish.
+2. **Then, in the next turn, ask the gate question** with exactly three
+   options: **Confirm — start the bootstrap** / **Change an answer** /
+   **Abort**.
+3. On **Change an answer**: ask which parameter and its new value, re-run the
+   validation for it (package/PascalCase rules, repo-name availability,
+   env-subset validity), apply any knock-ons (e.g. a changed display name
+   re-derives the PascalCase; a changed env set changes the transform flags),
+   then **re-show the full summary and ask the gate again**. Loop until
+   Confirm or Abort.
+4. On **Abort**: stop entirely — nothing has been created; say so and end.
+
+Do not touch GitHub, Firebase, or Bitrise before the Confirm.
+
 ## Step 1 — Preflight
 
 Stop at the first failure; report, don't improvise.
