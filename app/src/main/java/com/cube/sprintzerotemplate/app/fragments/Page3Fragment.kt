@@ -4,26 +4,26 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.cube.sprintzerotemplate.R
-import com.cube.sprintzerotemplate.databinding.FragmentInfoBinding
+import com.cube.sprintzerotemplate.databinding.FragmentPage3Binding
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * Fragment class for the info screen
+ * Fragment class for the page 3 tab
  */
 @AndroidEntryPoint
-class InfoFragment : Fragment(R.layout.fragment_info) {
-	private var binding: FragmentInfoBinding? = null
+class Page3Fragment : Fragment(R.layout.fragment_page3) {
+	private var binding: FragmentPage3Binding? = null
 
 	companion object {
 		/**
-		 * Get an instance of the [InfoFragment]
+		 * Get an instance of the [Page3Fragment]
 		 */
-		fun getInstance() = InfoFragment()
+		fun getInstance() = Page3Fragment()
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		FragmentInfoBinding.bind(view).let {
+		FragmentPage3Binding.bind(view).let {
 			this.binding = it
 			setUpUi()
 		}
@@ -36,10 +36,6 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
 		binding?.apply {
 			// TODO Implement later
 		}
-	}
-
-	override fun onResume() {
-		super.onResume()
 	}
 
 	override fun onDestroyView() {

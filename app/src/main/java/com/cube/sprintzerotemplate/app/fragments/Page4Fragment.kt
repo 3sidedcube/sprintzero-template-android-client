@@ -4,26 +4,26 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.cube.sprintzerotemplate.R
-import com.cube.sprintzerotemplate.databinding.FragmentDiscoverBinding
+import com.cube.sprintzerotemplate.databinding.FragmentPage4Binding
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * Fragment class for the discover screen
+ * Fragment class for the page 4 tab
  */
 @AndroidEntryPoint
-class DiscoverFragment : Fragment(R.layout.fragment_discover) {
-	private var binding: FragmentDiscoverBinding? = null
+class Page4Fragment : Fragment(R.layout.fragment_page4) {
+	private var binding: FragmentPage4Binding? = null
 
 	companion object {
 		/**
-		 * Get an instance of the [DiscoverFragment]
+		 * Get an instance of the [Page4Fragment]
 		 */
-		fun getInstance() = DiscoverFragment()
+		fun getInstance() = Page4Fragment()
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		FragmentDiscoverBinding.bind(view).let {
+		FragmentPage4Binding.bind(view).let {
 			this.binding = it
 			setUpUi()
 		}
@@ -36,10 +36,6 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 		binding?.apply {
 			// TODO Implement later
 		}
-	}
-
-	override fun onResume() {
-		super.onResume()
 	}
 
 	override fun onDestroyView() {

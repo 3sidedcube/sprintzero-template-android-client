@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/home_nav"
-        android:icon="@drawable/ic_tent"
-        android:title="@string/tab_title_home" />
+        android:id="@+id/page1_nav"
+        android:icon="@drawable/ic_android"
+        android:title="@string/tab_title_page1" />
     <item
-        android:id="@+id/lineup_nav"
-        android:icon="@drawable/ic_lineup"
-        android:title="@string/tab_title_lineup" />
+        android:id="@+id/page2_nav"
+        android:icon="@drawable/ic_android"
+        android:title="@string/tab_title_page2" />
     <item
-        android:id="@+id/discover_nav"
-        android:icon="@drawable/ic_discover"
-        android:title="@string/tab_title_discover" />
+        android:id="@+id/page3_nav"
+        android:icon="@drawable/ic_android"
+        android:title="@string/tab_title_page3" />
     <item
-        android:id="@+id/map_nav"
-        android:icon="@drawable/ic_map"
-        android:title="@string/tab_title_map" />
+        android:id="@+id/page4_nav"
+        android:icon="@drawable/ic_android"
+        android:title="@string/tab_title_page4" />
     <item
-        android:id="@+id/info_nav"
-        android:icon="@drawable/ic_info"
-        android:title="@string/tab_title_info" />
+        android:id="@+id/page5_nav"
+        android:icon="@drawable/ic_android"
+        android:title="@string/tab_title_page5" />
 </menu>

@@ -4,28 +4,27 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.cube.sprintzerotemplate.R
-import com.cube.sprintzerotemplate.databinding.FragmentMapBinding
+import com.cube.sprintzerotemplate.databinding.FragmentPage2Binding
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * Fragment class for the map screen
+ * Fragment class for the page 2 tab
  */
 @AndroidEntryPoint
-class MapFragment : Fragment(R.layout.fragment_map) {
-	private var binding: FragmentMapBinding? = null
+class Page2Fragment : Fragment(R.layout.fragment_page2) {
+	private var binding: FragmentPage2Binding? = null
 
 	companion object {
 		/**
-		 * Get an instance of the [LineupFragment]
+		 * Get an instance of the [Page2Fragment]
 		 */
-		fun getInstance() = LineupFragment()
+		fun getInstance() = Page2Fragment()
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		FragmentMapBinding.bind(view).let {
+		FragmentPage2Binding.bind(view).let {
 			this.binding = it
-
 			setUpUi()
 		}
 	}
@@ -35,11 +34,8 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 	 */
 	private fun setUpUi() {
 		binding?.apply {
+			// TODO Implement later
 		}
-	}
-
-	override fun onResume() {
-		super.onResume()
 	}
 
 	override fun onDestroyView() {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/page4_nav"
+    app:startDestination="@+id/page4_tab">
+
+    <fragment
+        android:id="@+id/page4_tab"
+        android:label="@string/tab_title_page4"
+        android:name="com.cube.sprintzerotemplate.app.fragments.Page4Fragment"
+        tools:layout="@layout/fragment_page4">
+    </fragment>
+
+</navigation>

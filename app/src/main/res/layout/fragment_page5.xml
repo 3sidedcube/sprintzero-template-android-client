@@ -12,6 +12,6 @@
 		android:textAlignment="center"
 		app:layout_constraintTop_toTopOf="parent"
 		app:layout_constraintBottom_toBottomOf="parent"
-		android:text="Map"/>
+		android:text="@string/tab_title_page5"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

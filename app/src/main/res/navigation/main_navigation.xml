@@ -3,11 +3,11 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/main_navigation"
-	app:startDestination="@+id/home_nav">
+	app:startDestination="@+id/page1_nav">
 
-	<include app:graph="@navigation/home_navigation"/>
-	<include app:graph="@navigation/lineup_navigation"/>
-	<include app:graph="@navigation/discover_navigation"/>
-	<include app:graph="@navigation/map_navigation"/>
-	<include app:graph="@navigation/info_navigation"/>
+	<include app:graph="@navigation/page1_navigation"/>
+	<include app:graph="@navigation/page2_navigation"/>
+	<include app:graph="@navigation/page3_navigation"/>
+	<include app:graph="@navigation/page4_navigation"/>
+	<include app:graph="@navigation/page5_navigation"/>
 </navigation>

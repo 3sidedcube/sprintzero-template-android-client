@@ -19,5 +19,8 @@
 	<color name="orange">#FFCC683B</color>
 	<color name="yellow">#FFF0E257</color>
 	<color name="red">#FFBD4435</color>
+	<!-- Light tint of the primary color, used as the M3 "container" role
+	     (e.g. the bottom nav active indicator pill) -->
+	<color name="red_container">#FFF4DBD7</color>
 
 </resources>

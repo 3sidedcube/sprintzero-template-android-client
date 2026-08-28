@@ -8,18 +8,23 @@
 	</style>
 
 	<!-- Main theme -->
-	<style name="Theme.SprintZeroTemplate" parent="Theme.MaterialComponents.Light.NoActionBar">
+	<style name="Theme.SprintZeroTemplate" parent="Theme.Material3.Light.NoActionBar">
 		<!-- Primary brand color -->
 		<item name="colorPrimary">@color/red</item>
-		<item name="colorPrimaryVariant">@color/white</item>
-		<item name="colorOnPrimary">@color/red</item>
+		<item name="colorOnPrimary">@color/white</item>
+		<item name="colorPrimaryContainer">@color/red_container</item>
+		<item name="colorOnPrimaryContainer">@color/red</item>
 		<!-- Secondary brand color -->
 		<item name="colorSecondary">@color/blue</item>
-		<item name="colorSecondaryVariant">@color/off_white</item>
-		<item name="colorOnSecondary">@color/blue</item>
+		<item name="colorOnSecondary">@color/white</item>
 		<!-- Status bar color -->
 		<item name="android:statusBarColor">@color/transparent</item>
 		<item name="android:windowLightStatusBar">false</item>
 		<item name="android:windowTranslucentNavigation">true</item>
+	</style>
+
+	<!-- Pill indicator shown behind the selected bottom nav item icon -->
+	<style name="Widget.SprintZeroTemplate.BottomNavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+		<item name="android:color">@color/red_container</item>
 	</style>
 </resources>

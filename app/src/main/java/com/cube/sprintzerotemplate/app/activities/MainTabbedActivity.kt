@@ -40,7 +40,7 @@ class MainTabbedActivity : ViewBindingActivity<ActivityMainTabbedBinding>() {
 	 * Set up the navigation with the bottom navigation bar
 	 */
 	private fun setUpNavigation() {
-		val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view_home) as NavHostFragment
+		val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
 		val navController = navHostFragment.navController
 
 		// Setup the bottom navigation view with navController
