@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- View tag ids used by lib/extensions/EdgeToEdgeExtensions.kt to capture a view's
+     pre-inset padding/margins exactly once -->
+<resources>
+	<item name="tag_initial_padding" type="id" />
+	<item name="tag_initial_margins" type="id" />
+</resources>

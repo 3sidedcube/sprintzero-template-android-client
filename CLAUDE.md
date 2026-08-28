@@ -46,9 +46,12 @@ never go in the example file.
 - **Edge-to-edge everywhere** (enforced from targetSdk 35): `ViewBindingActivity`
   calls `enableEdgeToEdge()`; keep content and touch targets clear of system
   bars with the `applySystemBarInsetsAsPadding`/`AsMargin` extensions in
-  `lib/util/EdgeToEdgeExtensions.kt`. Remember the horizontal insets — in
-  landscape the nav bar sits on a side edge. No legacy
-  `windowTranslucentNavigation`/`statusBarColor` theme flags.
+  `lib/extensions/EdgeToEdgeExtensions.kt`. Remember the horizontal insets — in
+  landscape the nav bar sits on a side edge. At most one inset call per view
+  (combine edge flags; a second call replaces the listener); scrolling views
+  pair bottom padding with `clipToPadding="false"`; opt into `includeIme` on
+  screens with text input. No legacy `windowTranslucentNavigation`/
+  `statusBarColor` theme flags.
 - **Package split:** `app` = UI flow (activities/fragments/adapters), `lib` =
   non-UI logic and reusable UI (see README "Repo structure").
 - **`.editorconfig` is the style source of truth** (tabs, max line 200,

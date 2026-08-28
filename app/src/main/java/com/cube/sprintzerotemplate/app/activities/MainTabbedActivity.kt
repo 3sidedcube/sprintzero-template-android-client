@@ -10,8 +10,8 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.cube.sprintzerotemplate.R
 import com.cube.sprintzerotemplate.databinding.ActivityMainTabbedBinding
+import com.cube.sprintzerotemplate.lib.extensions.applySystemBarInsetsAsPadding
 import com.cube.sprintzerotemplate.lib.generic.ViewBindingActivity
-import com.cube.sprintzerotemplate.lib.util.applySystemBarInsetsAsPadding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
