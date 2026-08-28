@@ -24,7 +24,8 @@ read from the catalog.
 
 ## Build
 
-Create a local, gitignored `gradle.properties` first (see README), then:
+Create a local, gitignored `gradle.properties` first (see
+`docs/getting-started.md`), then:
 
 ```
 ./gradlew ktlint lintFirebaseStagingApiStagingDebug assembleFirebaseStagingApiStagingDebug
@@ -37,8 +38,8 @@ the command above (plus the Testing commands) before pushing. Bitrise
 locally.
 
 Secrets follow the `secret.properties` (gitignored) / `secret-examples.properties`
-(committed placeholders, automatic fallback) pattern — see README. Real values
-never go in the example file.
+(committed placeholders, automatic fallback) pattern — see
+`docs/getting-started.md`. Real values never go in the example file.
 
 ## Code standards
 
@@ -113,6 +114,32 @@ ticket's WCAG criteria.
 - Run locally: `./gradlew testFirebaseStagingApiStagingDebugUnitTest` and
   `./gradlew connectedFirebaseStagingApiStagingDebugAndroidTest` (needs a
   device). CI deliberately runs neither — tests are a local/dev workflow.
+
+## Documentation (keep `docs/` current)
+
+`docs/` is the project documentation and the README is just its table of
+contents — both feed the team knowledge base, so **stale docs are bugs**. Every
+change lands with its documentation impact assessed; every PR review includes a
+docs check. The doc-worthiness rubric:
+
+- New/changed **user-facing capability** → `docs/features.md` (incl. its
+  at-a-glance table), possibly `docs/product-overview.md`.
+- **Dependency added or removed** → `docs/dependencies.md` (version bumps are
+  NOT doc-worthy — versions live only in the catalog).
+- **Build/run/config change** (flavor, secret, required tool) →
+  `docs/getting-started.md`.
+- **Security or accessibility measure** added/removed → `docs/security.md` /
+  `docs/accessibility.md`. These two are strictly factual — never document a
+  measure the code doesn't show.
+- **Architecture shift** (new layer/module/pattern) → `docs/architecture.md`.
+- **CI/CD or release-pipeline change** → `docs/ci-cd.md`.
+- Refactors, bug fixes, test-only and formatting changes are not doc-worthy —
+  a no-op is the correct outcome for most changes.
+
+Update the README table only when a doc is added or removed. Keep the docs
+descriptive (what IS, never roadmaps), link code as `path:line` instead of
+quoting it, and leave explicit `> **TODO:** …` markers rather than guessing
+facts only a human knows.
 
 ## When making changes
 
