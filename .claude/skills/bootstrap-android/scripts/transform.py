@@ -22,8 +22,12 @@ What it does (the rename inventory from the phase-2 handover):
   2. Moves main/test/androidTest source trees to the new package path
      (git mv when possible, preserving history).
   3. Renames files containing the template token (SprintZeroTemplateApp.kt etc).
-  4. Optionally adds a third 'dev' API environment (--api-envs dev,staging,live):
-     the apiDev product flavor plus the assembleDevAPKS Bitrise workflow.
+  4. API environments (--api-envs, default dev,staging,live — the template
+     ships all three, so the default is a no-op): any non-empty subset is
+     accepted; deselected environments are REMOVED — the api<Env> product
+     flavor, the assemble<Env>APKS Bitrise workflow — and branch triggers
+     left pointing at a removed workflow are retargeted to the nearest
+     surviving one. A legacy add path covers older-era clones missing apiDev.
   5. Optionally swaps dev/staging/live API_URL placeholder values.
   6. Deletes scripts/build-new-project.rb (no-op safeguard; gone from the template).
   7. Deletes .claude/skills/bootstrap-android — clients must not inherit the
@@ -239,19 +243,65 @@ def add_dev_api_env(repo: Path, report: dict) -> None:
                 "develop trigger retargeted to assembleDevAPKS in bitrise.yml")
 
 
-def heal_dangling_dev_trigger(repo: Path, report: dict) -> None:
-    """Older template states trigger develop -> assembleDevAPKS without the
-    workflow existing. When no dev env is requested, retarget to staging."""
+ENV_FLAVORS = {"dev": "apiDev", "staging": "apiStaging", "live": "apiLive"}
+ENV_WORKFLOWS = {"dev": "assembleDevAPKS", "staging": "assembleStagingAPKS",
+                 "live": "assembleProdAPKS"}
+
+
+def remove_api_env(repo: Path, env: str, report: dict) -> None:
+    """Remove a deselected API environment: its product flavor block and its
+    Bitrise workflow. Idempotent — absent blocks are fine on older-era clones."""
+    flavor = ENV_FLAVORS[env]
+    gradle = repo / "app" / "build.gradle.kts"
+    if gradle.exists():
+        text = gradle.read_text(encoding="utf-8")
+        block_re = re.compile(
+            r'\t\tcreate\("' + flavor + r'"\) \{\n(?:\t\t\t.*\n)*?\t\t\}\n')
+        new = block_re.sub("", text, count=1)
+        if new != text:
+            gradle.write_text(new, encoding="utf-8")
+            report["api_envs"].append(f"{flavor} flavor removed from app/build.gradle.kts")
+        else:
+            report["warnings"].append(
+                f"could not locate the {flavor} flavor block to remove — "
+                f"remove it manually if present")
+    bitrise = repo / "bitrise.yml"
+    if bitrise.exists():
+        text = bitrise.read_text(encoding="utf-8")
+        wf = ENV_WORKFLOWS[env]
+        wf_re = re.compile(r"(?m)^  " + wf + r":\n(?:(?:    .*)?\n)*")
+        new = wf_re.sub("", text, count=1)
+        if new != text:
+            bitrise.write_text(new, encoding="utf-8")
+            report["api_envs"].append(f"{wf} workflow removed from bitrise.yml")
+
+
+def retarget_triggers(repo: Path, report: dict) -> None:
+    """Point any branch trigger at a workflow that still exists. Preference
+    order approximates the branch's intent: staging, then live, then dev."""
     bitrise = repo / "bitrise.yml"
     if not bitrise.exists():
         return
     text = bitrise.read_text(encoding="utf-8")
-    if DEV_TRIGGER in text and "\n  assembleDevAPKS:" not in text:
-        bitrise.write_text(
-            text.replace(DEV_TRIGGER, STAGING_TRIGGER, 1), encoding="utf-8")
-        report["warnings"].append(
-            "bitrise trigger for develop referenced a nonexistent assembleDevAPKS "
-            "workflow — retargeted to assembleStagingAPKS")
+    defined = set(re.findall(r"(?m)^  (assemble\w+APKS):", text))
+    preference = ["assembleStagingAPKS", "assembleProdAPKS", "assembleDevAPKS"]
+    changed = False
+
+    def fix(match: re.Match) -> str:
+        nonlocal changed
+        wf = match.group(1)
+        if wf in defined:
+            return match.group(0)
+        for candidate in preference:
+            if candidate in defined:
+                changed = True
+                report["api_envs"].append(f"bitrise trigger retargeted {wf} -> {candidate}")
+                return match.group(0).replace(wf, candidate)
+        return match.group(0)
+
+    new = re.sub(r"(?m)^    workflow: (assemble\w+APKS)$", fix, text)
+    if changed:
+        bitrise.write_text(new, encoding="utf-8")
 
 
 def verify(repo: Path, report: dict) -> bool:
@@ -317,23 +367,26 @@ def main() -> int:
     ap.add_argument("--staging-url")
     ap.add_argument("--live-url")
     ap.add_argument("--dev-url")
-    ap.add_argument("--api-envs", default="staging,live",
-                    help="API environments: 'staging,live' (template default) "
-                         "or 'dev,staging,live' (adds the apiDev flavor and "
-                         "the assembleDevAPKS Bitrise workflow)")
+    ap.add_argument("--api-envs", default="dev,staging,live",
+                    help="API environments to keep, any non-empty subset of "
+                         "'dev,staging,live'. The template ships all three "
+                         "(the default is a no-op); deselected environments "
+                         "have their flavor and Bitrise workflow removed")
     ap.add_argument("--verify-only", action="store_true",
                     help="run only the verification pass")
     args = ap.parse_args()
 
     api_envs = sorted({e.strip().lower() for e in args.api_envs.split(",") if e.strip()})
-    if api_envs not in (["live", "staging"], ["dev", "live", "staging"]):
-        print("error: --api-envs must be 'staging,live' or 'dev,staging,live'",
+    if not api_envs or not set(api_envs) <= set(ENV_FLAVORS):
+        print("error: --api-envs must be a non-empty subset of 'dev,staging,live'",
               file=sys.stderr)
         return 2
-    if args.dev_url and "dev" not in api_envs:
-        print("error: --dev-url given but 'dev' is not in --api-envs",
-              file=sys.stderr)
-        return 2
+    for env, url in (("dev", args.dev_url), ("staging", args.staging_url),
+                     ("live", args.live_url)):
+        if url and env not in api_envs:
+            print(f"error: --{env}-url given but '{env}' is not in --api-envs",
+                  file=sys.stderr)
+            return 2
 
     repo: Path = args.repo.resolve()
     if not repo.is_dir():
@@ -405,11 +458,19 @@ def main() -> int:
                     if fixed != text:
                         f.write_text(fixed, encoding="utf-8")
 
-        # -- 6. Extra API environments (before URL swaps so --dev-url lands).
+        # -- 6. API environments (before URL swaps so the flags land). The
+        # template ships all three; strip the deselected ones, keep the
+        # legacy add path for older-era clones missing apiDev, then fix any
+        # trigger left pointing at a removed workflow.
+        for env in sorted(set(ENV_FLAVORS) - set(api_envs)):
+            remove_api_env(repo, env, report)
         if "dev" in api_envs:
             add_dev_api_env(repo, report)
-        else:
-            heal_dangling_dev_trigger(repo, report)
+        if set(api_envs) != set(ENV_FLAVORS):
+            report["warnings"].append(
+                "api environments were removed — review docs/ for references "
+                "to the removed flavors/workflows")
+        retarget_triggers(repo, report)
 
         # -- 7. API URL placeholders (optional).
         gradle = repo / "app" / "build.gradle.kts"

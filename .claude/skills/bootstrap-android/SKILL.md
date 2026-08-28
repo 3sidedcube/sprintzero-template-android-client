@@ -42,7 +42,7 @@ touching GitHub — a bad package name poisons every file.
 | Package / applicationId | `com.cube.<appname>` | Lowercase dot-separated segments, each `[a-z][a-z0-9]*`. Default prefix `com.cube.`. |
 | Repo name | `<app-name>-android-client` | Kebab-case. Must not already exist in `3sidedcube`. |
 | Client name | `<Client>` | Used in the README header, repo topic, and kickoff issue. |
-| API environments | `staging + live` | Firebase is **always** exactly staging + live (2 Firebase projects by policy — do not ask). The API dimension defaults to staging + live; ask whether a **dev** API environment is also needed. If yes, the transform adds the `apiDev` flavor and the `assembleDevAPKS` Bitrise workflow (`--api-envs dev,staging,live`). |
+| API environments | `dev + staging + live` (all on) | Multi-select with **all three toggled on** — the user switches off the ones they don't want (any non-empty subset is valid). The template ships all three; the transform removes each deselected environment's flavor and Bitrise workflow and retargets branch triggers to the nearest surviving workflow (`--api-envs <kept,envs>`). Firebase is **always** exactly staging + live regardless (2 Firebase projects by policy — do not ask). |
 | API base URLs (per env) | `https://api.staging...` | Optional; template placeholders remain if unknown. One per chosen API environment (`--staging-url` / `--live-url` / `--dev-url`). |
 | Jira project key | `<KEY>` | Optional. Never invent one. Enables epic creation and branch/PR conventions from day one. |
 | Firebase projects | `create now` / `manual` | Two per app — `<appname>-staging` + `<appname>-live` — always. If firebase-tools is authenticated (`firebase login:list`), offer to create both under the 3SC org now (Step 7); otherwise record the intended ids for the checklist. |
@@ -101,9 +101,12 @@ python3 scripts/transform.py --repo <clone> \
   [--staging-url <url>] [--live-url <url>] [--dev-url <url>]
 ```
 
-`--api-envs` defaults to `staging,live` (the template's flavors). With
-`dev,staging,live` it also inserts the `apiDev` product flavor and the
-`assembleDevAPKS` Bitrise workflow — both idempotent on re-runs.
+`--api-envs` defaults to `dev,staging,live` — the template's flavors, so the
+default is a no-op. Pass the kept subset from the interview: deselected
+environments have their `api<Env>` flavor and `assemble<Env>APKS` Bitrise
+workflow removed, and any branch trigger left pointing at a removed workflow
+is retargeted to the nearest surviving one (staging, then live, then dev).
+All idempotent on re-runs.
 
 Run it with **Python 3.11+** when available — the TOML parse check needs
 `tomllib`. On macOS the system `python3` is often 3.9; prefer a Homebrew
