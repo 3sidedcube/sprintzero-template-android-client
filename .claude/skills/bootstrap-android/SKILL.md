@@ -41,7 +41,9 @@ through the question UI** (AskUserQuestion), one per turn:
   "(Recommended)" where the recommendation is genuine — e.g. the derived
   package and repo names once the display name is known.
 - Optional parameters (Jira key, Figma link, API URLs) always include a
-  **Skip** option.
+  **Skip** option. The question UI requires at least two predefined options,
+  so these questions also carry a "type it via Other" second option —
+  known, accepted noise (reviewed 2026-08-28); don't relitigate it.
 - Custom values arrive through the UI's built-in **"Other" free-text
   input** — never require a separate chat reply. Where a parameter has no
   derivable default (the display name), the options carry illustrative
