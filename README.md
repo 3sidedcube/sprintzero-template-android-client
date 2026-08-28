@@ -49,7 +49,7 @@ This repo uses a single-module structure, with packages organised like a two-mod
 
 ## Flavors
 
-Two flavor dimensions: `firebase` (`firebaseStaging` / `firebaseLive`) and `api` (`apiStaging` / `apiLive`). CI builds `firebaseStagingApiStagingDebug`; Bitrise workflows map branches to variants (see `bitrise.yml`).
+Two flavor dimensions: `firebase` (`firebaseStaging` / `firebaseLive`) and `api` (`apiDev` / `apiStaging` / `apiLive`). CI builds `firebaseStagingApiStagingDebug`; Bitrise workflows map branches to variants (see `bitrise.yml`).
 
 ## Firebase integration
 

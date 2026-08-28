@@ -33,6 +33,10 @@ android {
 		create("firebaseLive") {
 			dimension = "firebase"
 		}
+		create("apiDev") {
+			dimension = "api"
+			buildConfigField("String", "API_URL", "\"https://api.dev.goes.here.com\"")
+		}
 		create("apiStaging") {
 			dimension = "api"
 			buildConfigField("String", "API_URL", "\"https://api.staging.goes.here.com\"")
