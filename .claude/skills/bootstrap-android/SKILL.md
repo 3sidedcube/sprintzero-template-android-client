@@ -31,6 +31,32 @@ Decide up front which surface you are on and say so in the final report:
 - **claude.ai / no Android SDK**: static verification only (level "static");
   compile verification is delegated to the first CI run. State this plainly.
 
+## Prerequisites (before the interview)
+
+Check these before asking a single question — failing fast beats
+interviewing into a wall. Report what's missing and stop; on a Cube VPS,
+follow the `gh-protocol` skill first.
+
+1. **`gh` is installed and authenticated**: `command -v gh` and
+   `gh auth status` (exit 0).
+2. **The account can act on the org**:
+   `gh api user/memberships/orgs/3sidedcube --jq .state` returns `active`.
+3. **Token scopes** (shown by `gh auth status`) include `repo` — it covers
+   everything this skill does on repos: creation, pushes, branch
+   protection, deploy keys and webhooks. Don't scope-grep for `read:org` —
+   parent scopes like `admin:org` satisfy it invisibly; the membership
+   check above is the functional test. No `workflow` scope is needed: the
+   bootstrap push doesn't modify `.github/workflows` (the template's
+   workflows arrive via server-side generation).
+
+**Why `gh` and not the GitHub MCP** (reviewed 2026-08-28 against the
+official `github/github-mcp-server` source, 117 tools): the MCP has no
+create-from-template (its `create_repository` takes only
+name/description/organization/private/autoInit), and no branch protection,
+webhooks, topics, deploy keys or repo-settings tools — it can only cover
+the read-side checks. `gh` is the canonical path for all GitHub plumbing
+in this skill; don't migrate it to the MCP.
+
 ## Step 0 — Interview & validation
 
 Run the interview as a **walkthrough — one question at a time, in the
@@ -101,13 +127,14 @@ Do not touch GitHub, Firebase, or Bitrise before the Confirm.
 
 ## Step 1 — Preflight
 
-Stop at the first failure; report, don't improvise.
+Stop at the first failure; report, don't improvise. (gh install/auth/scopes
+were already verified in Prerequisites, before the interview.)
 
-1. GitHub auth works (on a Cube VPS, follow the `gh-protocol` skill first).
-2. The template's default branch contains `gradle/libs.versions.toml`. If
+1. The template's default branch contains `gradle/libs.versions.toml`. If
    absent: **stop** — the AGP-9 refresh PR has not been merged and
    bootstrapping from the old template era is not allowed.
-3. Target repo name is free in `3sidedcube`.
+2. Target repo name is free in `3sidedcube` (re-check even though the
+   interview validated it — time has passed).
 
 ## Step 2 — Create the repo from the template
 
