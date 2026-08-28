@@ -486,6 +486,16 @@ manual checklist items.
 
 ## Step 8 — Bitrise app (optional automation)
 
+**Why raw API calls and not the Bitrise MCP** (reviewed 2026-08-28 against
+the official `bitrise-io/bitrise-mcp` source): the most capable of the MCPs
+reviewed — register_app supports the load-bearing `github-app` provider,
+register_ssh_key/finish/trigger_bitrise_build/list_available_stacks all
+exist — but it has **no config-location flip to `repository`** (its
+update_bitrise_yml writes Bitrise-side config, the opposite of the
+zero-drift convention) and **no keystore upload tools**, so two of the six
+steps can't migrate and the same PAT would drive two surfaces. Raw curl
+stays canonical; revisit only if the MCP gains those two capabilities.
+
 Runs only if the user opted in at the interview **and** the Bitrise PAT is
 available in the macOS keychain
 (`security find-generic-password -s bitrise-pat -w`; it authenticates the
