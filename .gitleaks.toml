@@ -1,9 +1,0 @@
-# Repo-root gitleaks config — auto-detected by the Security workflow's scan.
-[extend]
-useDefault = true
-
-[allowlist]
-description = "Firebase Android config files: the api_key values are app identifiers, not secrets — they ship inside every APK and are restricted by package name + signing certificate (per Google's own guidance). Real configs are committed to private client repos by the bootstrap flow."
-paths = [
-  '''app/src/[^/]+/google-services\.json$''',
-]
