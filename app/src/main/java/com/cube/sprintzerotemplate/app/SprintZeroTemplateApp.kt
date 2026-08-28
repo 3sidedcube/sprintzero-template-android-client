@@ -3,9 +3,9 @@ package com.cube.sprintzerotemplate.app
 import android.app.Application
 import com.cube.sprintzerotemplate.BuildConfig
 import com.cube.sprintzerotemplate.lib.preferences.GlobalAppPreferences
-import com.cube.sprintzerotemplate.lib.util.TimberProductionTree
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
 
 /**
  * Application class for the app
@@ -16,20 +16,15 @@ class SprintZeroTemplateApp : Application() {
 	override fun onCreate() {
 		super.onCreate()
 
-		initialiseLogging()
+		initialiseCrashlytics()
 		initialiseSharedPrefs()
 	}
 
 	/**
-	 * Set up logging with [Timber]
-	 * In production non-error logs are no-ops — see [TimberProductionTree]
+	 * Only report to Crashlytics from release builds so debug sessions don't pollute crash data
 	 */
-	private fun initialiseLogging() {
-		if (!BuildConfig.DEBUG) {
-			Timber.plant(TimberProductionTree())
-		} else {
-			Timber.plant(Timber.DebugTree())
-		}
+	private fun initialiseCrashlytics() {
+		Firebase.crashlytics.isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
 	}
 
 	/**

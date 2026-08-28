@@ -107,9 +107,6 @@ dependencies {
 	ksp(libs.dagger.compiler)
 	ksp(libs.hilt.compiler)
 
-	// Logging
-	implementation(libs.timber)
-
 	// Navigation
 	implementation(libs.androidx.navigation.fragment.ktx)
 	implementation(libs.androidx.navigation.ui.ktx)

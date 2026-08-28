@@ -7,8 +7,7 @@ This repository provides a clean, well-organised template designed to speed up t
 - **Build**: AGP 9.x with built-in Kotlin, Kotlin DSL build files, and a version catalog (`gradle/libs.versions.toml`) as the single source of truth for versions.
 - **DI**: Hilt (via KSP).
 - **Firebase**: Analytics, Crashlytics and Messaging, BoM-managed. The committed `google-services.json` is a **placeholder** — see setup below.
-- **Crash reporting**: Firebase Crashlytics — production errors logged via Timber flow to Crashlytics (`TimberProductionTree.kt`).
-- **Logging**: Timber, preconfigured (`TimberLoggingHelper.kt`).
+- **Crash reporting & logging**: Firebase Crashlytics — messages and non-fatals recorded via `CrashlyticsLoggingHelper.kt`; collection is disabled in debug builds.
 - **Lint**: ktlint enforced via a git pre-commit hook and in CI.
 - **CI**: GitHub Actions runs ktlint, unit tests, Android Lint and a debug build on every PR. Bitrise handles signed build distribution (develop/release/hotfix branch triggers).
 - **Security**: gitleaks secret scanning and dependency review on every PR; Dependabot keeps the toolchain and dependencies fresh weekly.
@@ -58,7 +57,7 @@ The template uses Firebase for push notifications, analytics and crash reporting
 
 ## Logging
 
-Timber is installed and configured — see `TimberLoggingHelper.kt`. In production, error logs are recorded to Firebase Crashlytics via `TimberProductionTree`; non-error logs are no-ops.
+Logging goes straight to Firebase Crashlytics — see `CrashlyticsLoggingHelper.kt`. `logError` records a non-fatal exception (with an optional context message); `logInfo` writes a breadcrumb that is attached to the next crash or non-fatal report. Crashlytics collection is disabled in debug builds (`SprintZeroTemplateApp`), so nothing is reported from local dev sessions.
 
 ## CI reference
 
