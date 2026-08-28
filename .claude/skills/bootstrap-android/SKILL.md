@@ -495,6 +495,11 @@ report what failed and fall back to the manual checklist items. API host: `https
 `Authorization: <PAT>`. Workspace: **`c3fb7a679c51271a`** ("3 Sided Cube" —
 the one with the real client apps; the other two workspaces are vestigial).
 
+Capture the PAT **once, into a shell variable** —
+`BITRISE_PAT=$(security find-generic-password -s bitrise-pat -w)` — and use
+it only in request headers. Never echo it, write it to a file, or let it
+appear in command output or the report.
+
 1. Register with the **hybrid connection** — both halves are load-bearing
    (established empirically 2026-08-25): `provider: github-app` gives the
    server-side service credential that repository-stored config requires
@@ -524,6 +529,13 @@ the one with the real client apps; the other two workspaces are vestigial).
    `default-android-config` placeholder is required by the API and becomes
    irrelevant at the next step. Delete the local private key file after
    registration — Bitrise holds it; nothing else needs it.
+
+   **If `finish` rejects the stack id** (Bitrise retires stacks
+   periodically): don't invent a replacement — read the stack a healthy
+   existing client app uses (`GET /apps/<donor-slug>/bitrise.yml` meta, or
+   the Bitrise stacks listing) and use that, then flag in the report that
+   the template's `bitrise.yml` meta needs the same update (template
+   drift), so the fix lands for future bootstraps too.
 
 2. Make the **repo's `bitrise.yml` the live config** (team convention: CI
    config is versioned in the repo, zero drift):
@@ -556,6 +568,9 @@ the one with the real client apps; the other two workspaces are vestigial).
    passwords deliberately transit the report):
 
    ```
+   # The dname is the team-standard signer identity — deliberately the same
+   # (Duncan Cook) for every client keystore; do NOT personalise it to the
+   # runner (confirmed intentional, 2026-08-28).
    keytool -genkeypair -keystore <appname>.keystore -storetype PKCS12 \
      -storepass <ONE openssl rand -hex 16 password> \
      -alias <appname> -keyalg RSA -keysize 2048 -validity 10000 \
@@ -573,15 +588,34 @@ the one with the real client apps; the other two workspaces are vestigial).
    Never commit the keystore; the checklist tells a human to vault the file
    + passwords in 1Password (Bitrise also retains the file).
 
-5. **No secrets are required** — the Jira/Slack post-build steps were
+5. **Trigger a verification build and watch it to the end** — the webhook
+   was wired after all the bootstrap pushes, so nothing has ever actually
+   built; without this, the SSH clone, stack, workflow resolution and
+   signing path all go untested until a team member's first real push:
+
+   ```
+   POST /apps/<app-slug>/builds
+     {"hook_info":{"type":"bitrise"},
+      "build_params":{"branch":"develop","workflow_id":"<develop's mapped workflow — assembleDevAPKS when a dev api env was kept, else assembleStagingAPKS>"}}
+   # poll GET /apps/<app-slug>/builds/<build-slug> until status != 0
+   # (1 = success; 2 = failed; 3 = aborted). Allow ~20 minutes.
+   ```
+
+   This deliberately spends one build's credits — that's the price of a
+   verified pipeline. A red build is a bootstrap failure to fix forward
+   (or report honestly), never something to hand over silently; the
+   handover states the build result and links it.
+
+6. **No secrets are required** — the Jira/Slack post-build steps were
    removed from the template's workflow (2026-08-25), and they were the only
    consumers of `JIRA_*`/`SLACK_WEBHOOK`. If a client app later needs custom
    secrets, values are copyable from donor apps via
    `GET /apps/<donor-slug>/secrets/<name>/value` (unprotected secrets only)
    and written with `PUT /apps/<app-slug>/secrets/<name>`.
 
-6. Record the Bitrise app URL (`https://app.bitrise.io/app/<app-slug>`) for
-   the report and trim the checklist accordingly.
+7. Record the Bitrise app URL (`https://app.bitrise.io/app/<app-slug>`) and
+   the verification build result for the report and trim the checklist
+   accordingly.
 
 ## Step 9 — Handover
 
