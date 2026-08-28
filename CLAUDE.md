@@ -35,6 +35,10 @@ Those are exactly the CI tasks (`.github/workflows/pr-checks.yml`). Bitrise
 (`bitrise.yml`) handles signed release builds — signing is not configured
 locally.
 
+Secrets follow the `secret.properties` (gitignored) / `secret-examples.properties`
+(committed placeholders, automatic fallback) pattern — see README. Real values
+never go in the example file.
+
 ## Non-obvious decisions (do not "clean up")
 
 - **No `org.jetbrains.kotlin.android` plugin** — AGP 9 built-in Kotlin is used
