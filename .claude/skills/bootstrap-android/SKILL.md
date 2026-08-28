@@ -57,6 +57,15 @@ follow the `gh-protocol` skill first.
    offered honestly. Fix path if the user wants the automation:
    `npm i -g firebase-tools` then `firebase login`, and re-check.
 
+5. **Bitrise automation availability** — *non-blocking*:
+   `security find-generic-password -s bitrise-pat -w` (never print the
+   value) exits 0 when the shared PAT is in the macOS keychain. Missing
+   does **not** stop the interview — record the result and surface it on
+   the Bitrise question so `create now` is offered honestly. Fix path: add
+   the PAT to the keychain
+   (`security add-generic-password -s bitrise-pat -a bitrise -w`), and
+   re-check.
+
 **Why `gh` and not the GitHub MCP** (reviewed 2026-08-28 against the
 official `github/github-mcp-server` source, 117 tools): the MCP has no
 create-from-template (its `create_repository` takes only
@@ -100,7 +109,7 @@ through the question UI** (AskUserQuestion), one per turn:
 | API base URLs (per env) | `https://api.staging...` | Optional; template placeholders remain if unknown. One per chosen API environment (`--staging-url` / `--live-url` / `--dev-url`). |
 | Firebase projects | `create now` / `manual` | Ask this first. **Use the Prerequisites check result here**: if firebase-tools was missing or unauthenticated, say so on this question — mark `create now` as unavailable until fixed (give the fix path: `npm i -g firebase-tools` + `firebase login`, offer to re-check) and recommend Manual. On `manual`, the checklist records the policy default — `<appname>-staging` + `<appname>-live` — and no environment question is asked. On `create now`, follow up with a **multi-select of Firebase environments**: staging + live toggled on, dev off, any non-empty subset valid. The template ships all three firebase flavors; the transform removes the deselected ones and remaps bitrise.yml variant names (`--firebase-envs <kept,envs>`), and Step 7 creates one project per selected environment. |
 | GA account id | `56643500` | **Paired with the Firebase question — only asked when Firebase = `create now`** (CLI-created projects need GA linked by the agent in Step 7; the console create-flow handles it on the manual path). Default: **3 Sided Cube's own GA account `56643500`** (name verified in the GA console, 2026-08-25) — analytics start under 3SC and get transferred to the client's account later when required (GA4 property move). Override only if the client should own analytics from day one — then discover their id from an existing project's `analyticsDetails` (see Step 7); never guess a client id. |
-| Bitrise app | `create now` / `manual` | If the Bitrise PAT is available (macOS keychain, `security find-generic-password -s bitrise-pat -w`), offer to register the app, wire the webhook and generate/upload the signing keystore now (Step 8); otherwise the checklist keeps the manual Bitrise items. |
+| Bitrise app | `create now` / `manual` | **Use the Prerequisites check result here**: if the PAT wasn't in the keychain, say so on this question — mark `create now` as unavailable until fixed (give the fix path from Prerequisites, offer to re-check) and recommend Manual. On `create now`, Step 8 registers the app, wires the webhook and generates/uploads the signing keystore; on `manual`, the checklist keeps the manual Bitrise items. |
 
 `scripts/transform.py` enforces the package and PascalCase rules and will
 exit 2 on bad input — but validate in conversation first so the user isn't
