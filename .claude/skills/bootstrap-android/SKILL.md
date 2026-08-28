@@ -49,6 +49,14 @@ follow the `gh-protocol` skill first.
    bootstrap push doesn't modify `.github/workflows` (the template's
    workflows arrive via server-side generation).
 
+4. **Firebase automation availability** — *non-blocking*: `command -v
+   firebase` and `firebase login:list` showing an authenticated account
+   (e.g. `Logged in as kieran@3sidedcube.com`). Missing or unauthenticated
+   does **not** stop the interview — record the result and surface it on
+   the Firebase question (see the interview table) so `create now` is
+   offered honestly. Fix path if the user wants the automation:
+   `npm i -g firebase-tools` then `firebase login`, and re-check.
+
 **Why `gh` and not the GitHub MCP** (reviewed 2026-08-28 against the
 official `github/github-mcp-server` source, 117 tools): the MCP has no
 create-from-template (its `create_repository` takes only
@@ -90,7 +98,7 @@ through the question UI** (AskUserQuestion), one per turn:
 | Figma project | `<figma.com link>` | Optional. Never invent one. When given, record the design-file link in the client CLAUDE.md header (Step 3) so agents (and the Figma MCP tooling) can find the designs. |
 | API environments | `dev + staging + live` (all on) | Multi-select with **all three toggled on** — the user switches off the ones they don't want (any non-empty subset is valid). The template ships all three; the transform removes each deselected environment's flavor and Bitrise workflow and retargets branch triggers to the nearest surviving workflow (`--api-envs <kept,envs>`). Firebase is **always** exactly staging + live regardless (2 Firebase projects by policy — do not ask). |
 | API base URLs (per env) | `https://api.staging...` | Optional; template placeholders remain if unknown. One per chosen API environment (`--staging-url` / `--live-url` / `--dev-url`). |
-| Firebase projects | `create now` / `manual` | Ask this first. On `manual`, the checklist records the policy default — `<appname>-staging` + `<appname>-live` — and no environment question is asked. On `create now` (requires firebase-tools authenticated — `firebase login:list`), follow up with a **multi-select of Firebase environments**: staging + live toggled on, dev off, any non-empty subset valid. The template ships all three firebase flavors; the transform removes the deselected ones and remaps bitrise.yml variant names (`--firebase-envs <kept,envs>`), and Step 7 creates one project per selected environment. |
+| Firebase projects | `create now` / `manual` | Ask this first. **Use the Prerequisites check result here**: if firebase-tools was missing or unauthenticated, say so on this question — mark `create now` as unavailable until fixed (give the fix path: `npm i -g firebase-tools` + `firebase login`, offer to re-check) and recommend Manual. On `manual`, the checklist records the policy default — `<appname>-staging` + `<appname>-live` — and no environment question is asked. On `create now`, follow up with a **multi-select of Firebase environments**: staging + live toggled on, dev off, any non-empty subset valid. The template ships all three firebase flavors; the transform removes the deselected ones and remaps bitrise.yml variant names (`--firebase-envs <kept,envs>`), and Step 7 creates one project per selected environment. |
 | GA account id | `56643500` | **Paired with the Firebase question — only asked when Firebase = `create now`** (CLI-created projects need GA linked by the agent in Step 7; the console create-flow handles it on the manual path). Default: **3 Sided Cube's own GA account `56643500`** (name verified in the GA console, 2026-08-25) — analytics start under 3SC and get transferred to the client's account later when required (GA4 property move). Override only if the client should own analytics from day one — then discover their id from an existing project's `analyticsDetails` (see Step 7); never guess a client id. |
 | Bitrise app | `create now` / `manual` | If the Bitrise PAT is available (macOS keychain, `security find-generic-password -s bitrise-pat -w`), offer to register the app, wire the webhook and generate/upload the signing keystore now (Step 8); otherwise the checklist keeps the manual Bitrise items. |
 
