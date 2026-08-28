@@ -48,7 +48,7 @@ touching GitHub — a bad package name poisons every file.
 | Firebase projects | `create now` / `manual` | Two per app — `<appname>-staging` + `<appname>-live` — always. If firebase-tools is authenticated (`firebase login:list`), offer to create both under the 3SC org now (Step 7); otherwise record the intended ids for the checklist. |
 | Bitrise app | `create now` / `manual` | If the Bitrise PAT is available (macOS keychain, `security find-generic-password -s bitrise-pat -w`), offer to register the app, wire the webhook and generate/upload the signing keystore now (Step 8); otherwise the checklist keeps the manual Bitrise items. |
 | GA account id | `56643500` | Default: **3 Sided Cube's own GA account `56643500`** (name verified in the GA console, 2026-08-25) — analytics start under 3SC and get transferred to the client's account later when required (GA4 property move). Override only if the client should own analytics from day one — then discover their id from an existing project's `analyticsDetails` (see Step 7); never guess a client id. |
-| minSdk override | `31` | Default: template value (30). |
+| minSdk override | `30` | Default: template value (30). |
 
 `scripts/transform.py` enforces the package and PascalCase rules and will
 exit 2 on bad input — but validate in conversation first so the user isn't
