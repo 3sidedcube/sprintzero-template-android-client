@@ -10,7 +10,7 @@
 
 | Workflow | Variant built | Trigger |
 |---|---|---|
-| `assembleDevAPKS` | `firebaseStagingApiDev` release + bundle | push to `develop` |
+| `assembleDevAPKS` | `firebaseDevApiDev` release + bundle | push to `develop` |
 | `assembleStagingAPKS` | `firebaseStagingApiStaging` release + bundle | push to `release/*` |
 | `assembleProdAPKS` | `firebaseLiveApiLive` release + bundle | push to `hotfix/*` |
 | `assembleAllAPKS` | `assembleRelease` / `bundleRelease` (everything) | manual |

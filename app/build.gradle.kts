@@ -39,6 +39,9 @@ android {
 
 	flavorDimensions += listOf("firebase", "api")
 	productFlavors {
+		create("firebaseDev") {
+			dimension = "firebase"
+		}
 		create("firebaseStaging") {
 			dimension = "firebase"
 		}

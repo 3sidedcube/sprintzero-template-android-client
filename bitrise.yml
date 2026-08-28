@@ -61,15 +61,15 @@ workflows:
     envs:
       - opts:
           is_expand: false
-        DEBUG_VARIANT: firebaseStagingApiDevDebug
+        DEBUG_VARIANT: firebaseDevApiDevDebug
       - opts:
           is_expand: false
-        RELEASE_VARIANT: firebaseStagingApiDevRelease
+        RELEASE_VARIANT: firebaseDevApiDevRelease
       - opts:
           is_expand: false
         GRADLE_TASK: |-
-          assembleFirebaseStagingApiDevRelease
-          bundleFirebaseStagingApiDevRelease
+          assembleFirebaseDevApiDevRelease
+          bundleFirebaseDevApiDevRelease
   assembleProdAPKS:
     before_run:
       - assemble

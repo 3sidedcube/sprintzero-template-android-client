@@ -30,10 +30,13 @@ What it does (the rename inventory from the phase-2 handover):
      surviving one. A legacy add path covers older-era clones missing apiDev.
   5. Optionally swaps dev/staging/live API_URL placeholder values.
   5b. Firebase environments (--firebase-envs, default staging,live — the
-     template's flavors, a no-op): any non-empty subset of dev,staging,live.
-     'dev' ADDS a firebaseDev flavor plus a placeholder google-services.json
-     source set; deselecting staging/live REMOVES the flavor and its source
-     set, remapping bitrise.yml variant/task names to a surviving flavor.
+     interview default, which strips the template's firebaseDev flavor): any
+     non-empty subset of dev,staging,live. The template ships all three
+     firebase flavors; deselected ones have their flavor and source set
+     removed and bitrise.yml variant/task names remapped to a surviving
+     flavor (a legacy add path covers older-era clones missing firebaseDev).
+     Deterministic doc edits keep docs/getting-started.md's flavor matrix and
+     docs/ci-cd.md's workflow table consistent with the kept environments.
   6. Deletes scripts/build-new-project.rb (no-op safeguard; gone from the template).
   7. Deletes .claude/skills/bootstrap-android — clients must not inherit the
      skill that creates clients (.claude is also excluded from the walk so the
@@ -383,6 +386,39 @@ def remap_firebase_in_bitrise(repo: Path, kept: set, report: dict) -> None:
         bitrise.write_text(text, encoding="utf-8")
 
 
+def update_docs_for_envs(repo: Path, api_envs, firebase_envs, report: dict) -> None:
+    """Keep the generated client's docs consistent with the kept environments —
+    the template docs enumerate every shipped flavor and Bitrise workflow."""
+    order = ("dev", "staging", "live")
+    gs = repo / "docs" / "getting-started.md"
+    if gs.exists():
+        text = gs.read_text(encoding="utf-8")
+        fb = " / ".join(f"`{FIREBASE_FLAVORS[e]}`" for e in order if e in firebase_envs)
+        api = " / ".join(f"`{ENV_FLAVORS[e]}`" for e in order if e in api_envs)
+        new = re.sub(r"`firebase` \([^)]*\)", f"`firebase` ({fb})", text)
+        new = re.sub(r"`api` \([^)]*\)", f"`api` ({api})", new)
+        if new != text:
+            gs.write_text(new, encoding="utf-8")
+            report["files_edited"].add(str(gs))
+    cicd = repo / "docs" / "ci-cd.md"
+    if cicd.exists():
+        text = cicd.read_text(encoding="utf-8")
+        new = text
+        if "dev" not in api_envs:
+            new = re.sub(r"(?m)^\| `assembleDevAPKS`.*\n", "", new)
+        preference = [e for e in ("staging", "live", "dev") if e in firebase_envs]
+        if preference:
+            target = FIREBASE_FLAVORS[preference[0]]
+            for env, flavor in FIREBASE_FLAVORS.items():
+                if env not in firebase_envs:
+                    new = new.replace(flavor, target).replace(
+                        flavor[0].upper() + flavor[1:],
+                        target[0].upper() + target[1:])
+        if new != text:
+            cicd.write_text(new, encoding="utf-8")
+            report["files_edited"].add(str(cicd))
+
+
 def retarget_triggers(repo: Path, report: dict) -> None:
     """Point any branch trigger at a workflow that still exists. Preference
     order approximates the branch's intent: staging, then live, then dev."""
@@ -481,9 +517,10 @@ def main() -> int:
                          "have their flavor and Bitrise workflow removed")
     ap.add_argument("--firebase-envs", default="staging,live",
                     help="Firebase environments to keep, any non-empty subset "
-                         "of 'dev,staging,live'. The template ships staging + "
-                         "live (the default is a no-op); 'dev' adds the "
-                         "firebaseDev flavor, deselected ones are removed")
+                         "of 'dev,staging,live'. The template ships all three "
+                         "firebase flavors; the default (the interview "
+                         "default) strips firebaseDev, deselected ones are "
+                         "removed")
     ap.add_argument("--verify-only", action="store_true",
                     help="run only the verification pass")
     args = ap.parse_args()
@@ -584,22 +621,20 @@ def main() -> int:
             remove_api_env(repo, env, report)
         if "dev" in api_envs:
             add_dev_api_env(repo, report)
-        if set(api_envs) != set(ENV_FLAVORS):
-            report["warnings"].append(
-                "api environments were removed — review docs/ for references "
-                "to the removed flavors/workflows")
-
-        # -- 6b. Firebase environments (template ships staging + live).
+        # -- 6b. Firebase environments (template ships all three; the legacy
+        # add path covers older-era clones missing firebaseDev).
         if "dev" in firebase_envs:
             add_firebase_dev(repo, report)
         for env in sorted(set(FIREBASE_FLAVORS) - set(firebase_envs)):
             remove_firebase_env(repo, env, report)
-        if set(firebase_envs) != {"live", "staging"}:
+        if not ({"staging", "live"} <= set(api_envs)
+                and {"staging", "live"} <= set(firebase_envs)):
             report["warnings"].append(
-                "firebase environments changed from the template default — "
-                "review docs/ and CLAUDE.md variant/task-name references")
+                "staging/live environments were removed — review CLAUDE.md "
+                "variant/task-name references")
         remap_firebase_in_bitrise(repo, set(firebase_envs), report)
         retarget_triggers(repo, report)
+        update_docs_for_envs(repo, api_envs, firebase_envs, report)
 
         # -- 7. API URL placeholders (optional).
         gradle = repo / "app" / "build.gradle.kts"

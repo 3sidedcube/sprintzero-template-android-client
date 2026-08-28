@@ -28,7 +28,7 @@ Toolchain versions are pinned in [`gradle/libs.versions.toml`](../gradle/libs.ve
 
 ## Build & run
 
-Two flavor dimensions produce the variant matrix: `firebase` (`firebaseStaging` / `firebaseLive`) × `api` (`apiDev` / `apiStaging` / `apiLive`), each with `debug` and `release` build types. Release builds are minified with R8. The everyday local variant is `firebaseStagingApiStagingDebug`:
+Two flavor dimensions produce the variant matrix: `firebase` (`firebaseDev` / `firebaseStaging` / `firebaseLive`) × `api` (`apiDev` / `apiStaging` / `apiLive`), each with `debug` and `release` build types. Release builds are minified with R8. The everyday local variant is `firebaseStagingApiStagingDebug`:
 
 ```
 ./gradlew assembleFirebaseStagingApiStagingDebug
