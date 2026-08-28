@@ -317,6 +317,15 @@ force-push, never rewrite history.
 
 ## Step 7 — Firebase projects (optional automation)
 
+**Why the CLI + raw API and not the Firebase MCP** (reviewed 2026-08-28
+against the official server in `firebase-tools` `src/mcp`, 49 tools): the MCP
+covers create_project / create_app / get_sdk_config, but has no Google
+Analytics linking and no serviceusage (Crashlytics enable) — exactly the two
+steps below that already require raw Management-API calls. It is also the
+same firebase-tools dependency with the same auth, and its stateful
+active-project model (`update_environment`) is more error-prone for this
+multi-project flow than the CLI's explicit `--project` flag. Don't migrate.
+
 Runs only if the user opted in at the interview **and** `firebase login:list`
 shows an authenticated account (CLI: `npm i -g firebase-tools`). If either is
 false, skip — the checklist keeps the manual Firebase items. Firebase
