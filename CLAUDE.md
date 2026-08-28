@@ -27,11 +27,11 @@ read from the catalog.
 Create a local, gitignored `gradle.properties` first (see README), then:
 
 ```
-./gradlew ktlint testFirebaseStagingApiStagingDebugUnitTest \
-  lintFirebaseStagingApiStagingDebug assembleFirebaseStagingApiStagingDebug
+./gradlew ktlint lintFirebaseStagingApiStagingDebug assembleFirebaseStagingApiStagingDebug
 ```
 
-Those are exactly the CI tasks (`.github/workflows/pr-checks.yml`). Bitrise
+Those are exactly the CI tasks (`.github/workflows/pr-checks.yml`) — CI does
+NOT run the test suites (team decision; run them locally, see Testing). Bitrise
 (`bitrise.yml`) handles signed release builds — signing is not configured
 locally.
 
@@ -109,8 +109,9 @@ ticket's WCAG criteria.
   with `mockkObject` (see `BootActivityTest`).
 - Naming: `method_scenario_expectedOutcome`, one behaviour per test. Every
   production class has an example test to crib from.
-- Run: `./gradlew testFirebaseStagingApiStagingDebugUnitTest` (the CI task) and
-  `./gradlew connectedFirebaseStagingApiStagingDebugAndroidTest` (needs a device).
+- Run locally: `./gradlew testFirebaseStagingApiStagingDebugUnitTest` and
+  `./gradlew connectedFirebaseStagingApiStagingDebugAndroidTest` (needs a
+  device). CI deliberately runs neither — tests are a local/dev workflow.
 
 ## When making changes
 

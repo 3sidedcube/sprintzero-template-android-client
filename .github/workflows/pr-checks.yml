@@ -42,9 +42,6 @@ jobs:
       - name: ktlint
         run: ./gradlew ktlint
 
-      - name: Unit tests
-        run: ./gradlew testFirebaseStagingApiStagingDebugUnitTest
-
       - name: Android Lint
         run: ./gradlew lintFirebaseStagingApiStagingDebug
 

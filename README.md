@@ -9,7 +9,7 @@ This repository provides a clean, well-organised template designed to speed up t
 - **Firebase**: Analytics, Crashlytics and Messaging, BoM-managed. The committed `google-services.json` is a **placeholder** — see setup below.
 - **Crash reporting & logging**: Firebase Crashlytics — messages and non-fatals recorded via `CrashlyticsLoggingHelper.kt`; collection is disabled in debug builds.
 - **Lint**: ktlint enforced via a git pre-commit hook and in CI.
-- **CI**: GitHub Actions runs ktlint, unit tests, Android Lint and a debug build on every PR. Bitrise handles signed build distribution (develop/release/hotfix branch triggers).
+- **CI**: GitHub Actions runs ktlint, Android Lint and a debug build on every PR (tests run locally — see the testing docs in `CLAUDE.md`). Bitrise handles signed build distribution (develop/release/hotfix branch triggers).
 - **Security**: dependency review on every PR; Dependabot keeps the toolchain and dependencies fresh weekly.
 - **Governance**: team PR template and CODEOWNERS (`@3sidedcube/android`) included.
 
@@ -73,7 +73,7 @@ Logging goes straight to Firebase Crashlytics — see `CrashlyticsLoggingHelper.
 
 | Concern | Where |
 | --- | --- |
-| PR checks (ktlint, unit tests, lint, debug build) | `.github/workflows/pr-checks.yml` |
+| PR checks (ktlint, lint, debug build) | `.github/workflows/pr-checks.yml` |
 | Dependency review | `.github/workflows/security.yml` |
 | Dependency updates | `.github/dependabot.yml` |
 | Signed builds, distribution | `bitrise.yml` |
