@@ -43,6 +43,12 @@ never go in the example file.
 
 - **Kotlin only** for new code. Defaults: ViewBinding + ViewModel, Hilt for DI.
   **No event bus** — prefer Flow/LiveData/direct callbacks.
+- **Edge-to-edge everywhere** (enforced from targetSdk 35): `ViewBindingActivity`
+  calls `enableEdgeToEdge()`; keep content and touch targets clear of system
+  bars with the `applySystemBarInsetsAsPadding`/`AsMargin` extensions in
+  `lib/util/EdgeToEdgeExtensions.kt`. Remember the horizontal insets — in
+  landscape the nav bar sits on a side edge. No legacy
+  `windowTranslucentNavigation`/`statusBarColor` theme flags.
 - **Package split:** `app` = UI flow (activities/fragments/adapters), `lib` =
   non-UI logic and reusable UI (see README "Repo structure").
 - **`.editorconfig` is the style source of truth** (tabs, max line 200,

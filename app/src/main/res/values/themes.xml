@@ -17,10 +17,8 @@
 		<!-- Secondary brand color -->
 		<item name="colorSecondary">@color/blue</item>
 		<item name="colorOnSecondary">@color/white</item>
-		<!-- Status bar color -->
-		<item name="android:statusBarColor">@color/transparent</item>
-		<item name="android:windowLightStatusBar">false</item>
-		<item name="android:windowTranslucentNavigation">true</item>
+		<!-- System bars are handled by enableEdgeToEdge() in ViewBindingActivity — no
+		     statusBarColor/windowTranslucentNavigation legacy flags here -->
 	</style>
 
 	<!-- Pill indicator shown behind the selected bottom nav item icon -->

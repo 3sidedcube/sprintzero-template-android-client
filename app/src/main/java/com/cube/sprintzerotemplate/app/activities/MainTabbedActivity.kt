@@ -11,6 +11,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.cube.sprintzerotemplate.R
 import com.cube.sprintzerotemplate.databinding.ActivityMainTabbedBinding
 import com.cube.sprintzerotemplate.lib.generic.ViewBindingActivity
+import com.cube.sprintzerotemplate.lib.util.applySystemBarInsetsAsPadding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,7 +34,17 @@ class MainTabbedActivity : ViewBindingActivity<ActivityMainTabbedBinding>() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
+		setUpEdgeToEdge()
 		setUpNavigation()
+	}
+
+	/**
+	 * Keep the tab content and the bottom nav clear of the system bars — in landscape the
+	 * navigation bar sits on a side edge, so both views need the horizontal insets too
+	 */
+	private fun setUpEdgeToEdge() {
+		binding.fragmentContainerView.applySystemBarInsetsAsPadding(left = true, top = true, right = true)
+		binding.bottomNav.applySystemBarInsetsAsPadding(left = true, right = true, bottom = true)
 	}
 
 	/**

@@ -16,6 +16,7 @@ googleServices = "4.5.0"
 crashlyticsPlugin = "3.0.8"
 
 coreKtx = "1.19.0"
+activity = "1.13.0"
 appcompat = "1.8.0"
 lifecycle = "2.11.0"
 constraintlayout = "2.2.2"
@@ -35,6 +36,7 @@ ktlintCli = "1.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
