@@ -30,8 +30,9 @@ Create a local, gitignored `gradle.properties` first (see README), then:
 ./gradlew ktlint lintFirebaseStagingApiStagingDebug assembleFirebaseStagingApiStagingDebug
 ```
 
-Those are exactly the CI tasks (`.github/workflows/pr-checks.yml`) — CI does
-NOT run the test suites (team decision; run them locally, see Testing). Bitrise
+CI (`.github/workflows/pr-checks.yml`) runs **only ktlint** (team decision) —
+Android Lint, the debug build and the test suites are local verification; run
+the command above (plus the Testing commands) before pushing. Bitrise
 (`bitrise.yml`) handles signed release builds — signing is not configured
 locally.
 

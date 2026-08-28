@@ -14,9 +14,9 @@ permissions:
 
 jobs:
   checks:
-    name: Lint, test & build
+    name: ktlint
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -30,6 +30,8 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      # AGP refuses to configure without android.useAndroidX, so CI still needs a
+      # minimal gradle.properties even though only ktlint runs
       - name: Create CI gradle.properties
         run: |
           cat > gradle.properties << 'PROPS'
@@ -41,17 +43,3 @@ jobs:
 
       - name: ktlint
         run: ./gradlew ktlint
-
-      - name: Android Lint
-        run: ./gradlew lintFirebaseStagingApiStagingDebug
-
-      - name: Assemble debug
-        run: ./gradlew assembleFirebaseStagingApiStagingDebug
-
-      - name: Upload lint report
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: lint-report
-          path: app/build/reports/lint-results-*.html
-          if-no-files-found: ignore
