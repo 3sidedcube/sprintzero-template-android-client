@@ -94,6 +94,24 @@ Pre-PR self-check: TalkBack walk of the flow → max font size (Display AND
 Accessibility settings) → rotate to landscape → tap targets ≥ 48dp → the
 ticket's WCAG criteria.
 
+## Testing
+
+- **Unit tests** (`app/src/test`, package-mirrored): plain JUnit + MockK for pure
+  logic and Firebase-touching code; Robolectric (`@RunWith(AndroidJUnit4::class)`)
+  when a real Context/View/resources are needed. Robolectric simulates API 36 and
+  runs against `HiltTestApplication` (`app/src/test/resources/robolectric.properties`)
+  so the real Application (Hilt + Firebase init) never executes on the JVM.
+- **Instrumented tests** (`app/src/androidTest`): Espresso, launched through
+  `HiltTestRunner`; `@HiltAndroidTest` + `HiltAndroidRule` (order 0) +
+  `ActivityScenarioRule` (order 1).
+- **Never touch real Firebase in tests** — mock the `Firebase.x` accessor with
+  `mockkStatic` (see `CrashlyticsLoggingHelperTest`) or stub the helper object
+  with `mockkObject` (see `BootActivityTest`).
+- Naming: `method_scenario_expectedOutcome`, one behaviour per test. Every
+  production class has an example test to crib from.
+- Run: `./gradlew testFirebaseStagingApiStagingDebugUnitTest` (the CI task) and
+  `./gradlew connectedFirebaseStagingApiStagingDebugAndroidTest` (needs a device).
+
 ## When making changes
 
 - **New dependency** → version in `gradle/libs.versions.toml`, reference via

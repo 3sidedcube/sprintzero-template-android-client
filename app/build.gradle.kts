@@ -29,7 +29,7 @@ android {
 		versionCode = 1
 		versionName = "0.1.0"
 
-		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+		testInstrumentationRunner = "com.cube.sprintzerotemplate.HiltTestRunner"
 		vectorDrawables {
 			useSupportLibrary = true
 		}
@@ -79,6 +79,13 @@ android {
 	buildFeatures {
 		viewBinding = true
 		buildConfig = true
+	}
+
+	testOptions {
+		unitTests {
+			// Robolectric tests inflate real layouts and read real resources
+			isIncludeAndroidResources = true
+		}
 	}
 }
 
@@ -138,10 +145,20 @@ dependencies {
 	implementation(libs.firebase.crashlytics)
 	implementation(libs.firebase.messaging)
 
-	// Tests
+	// Unit tests (JVM) — Robolectric for Android-dependent code, MockK for mocking
 	testImplementation(libs.junit)
+	testImplementation(libs.androidx.junit)
+	testImplementation(libs.androidx.test.core.ktx)
+	testImplementation(libs.mockk)
+	testImplementation(libs.robolectric)
+	testImplementation(libs.hilt.android.testing)
+	kspTest(libs.hilt.compiler)
+
+	// Instrumented tests (device/emulator) — Espresso driven through the HiltTestRunner
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
+	androidTestImplementation(libs.hilt.android.testing)
+	kspAndroidTest(libs.hilt.compiler)
 
 	// ktlint CLI (runs via the ktlint/ktlintFormat tasks below)
 	ktlint("com.pinterest.ktlint:ktlint-cli:${libs.versions.ktlintCli.get()}") {
