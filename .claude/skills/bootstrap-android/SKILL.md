@@ -46,6 +46,7 @@ touching GitHub — a bad package name poisons every file.
 | API base URLs (per env) | `https://api.staging...` | Optional; template placeholders remain if unknown. One per chosen API environment (`--staging-url` / `--live-url` / `--dev-url`). |
 | Jira project key | `<KEY>` | Optional. Never invent one. Enables epic creation and branch/PR conventions from day one. |
 | Firebase projects | `create now` / `manual` | Two per app — `<appname>-staging` + `<appname>-live` — always. If firebase-tools is authenticated (`firebase login:list`), offer to create both under the 3SC org now (Step 7); otherwise record the intended ids for the checklist. |
+| Bitrise app | `create now` / `manual` | If the Bitrise PAT is available (macOS keychain, `security find-generic-password -s bitrise-pat -w`), offer to register the app, wire the webhook and generate/upload the signing keystore now (Step 8); otherwise the checklist keeps the manual Bitrise items. |
 | GA account id | `56643500` | Default: **3 Sided Cube's own GA account `56643500`** (name verified in the GA console, 2026-08-25) — analytics start under 3SC and get transferred to the client's account later when required (GA4 property move). Override only if the client should own analytics from day one — then discover their id from an existing project's `analyticsDetails` (see Step 7); never guess a client id. |
 | minSdk override | `31` | Default: template value (30). |
 
@@ -123,8 +124,11 @@ exit = stop and fix; the JSON report says exactly what survived. Read its
 
 Three edits the script deliberately leaves to you:
 
-- **README**: replace template-specific copy with a project header — client
-  name and Jira board link — keeping the setup/how-to sections.
+- **README**: the template README is a short description plus a Documentation
+  table linking into `docs/` — replace the description with a client project
+  header (client name and Jira board link) and keep the table. Refresh
+  `docs/product-overview.md`'s template-speak with the client context while
+  you're there; the other docs describe the code and transform cleanly.
 - **CLAUDE.md**: the transform renames its heading, but the intro paragraph
   still describes the template — replace it with a client project header per
   the `<!-- bootstrap-android: ... -->` marker comment in the file, keeping
@@ -184,9 +188,9 @@ force-push, never rewrite history.
    (Bitrise maps develop/release/hotfix triggers). Do **not** rename the
    default branch to `develop`.
 2. Branch protection on **both** `master` and `develop`: require the
-   `PR Checks` and `Security` workflow jobs — the status-check contexts are
-   the job display names (`Lint, test & build`, `Secret scanning (gitleaks)`,
-   `Dependency review`) — plus one review. No force pushes, no deletions.
+   `PR Checks` workflow job — the status-check context is the job display
+   name (`ktlint`; CI deliberately runs nothing else) — plus one review.
+   No force pushes, no deletions.
 3. Repo topics: `android` + a client tag.
 4. Confirm the "template repository" flag is **off** on the new repo.
 
@@ -286,14 +290,7 @@ manual checklist items.
    build(firebase): add staging and live google-services.json
    ```
 
-7. The Security workflow's gitleaks scan flags the api_key values in real
-   configs unless the repo has the template's `.gitleaks.toml` allowlist for
-   `app/src/*/google-services.json`. Templates bootstrapped after 2026-08-25
-   include it; if it's missing (older template era), add it before pushing
-   the configs and note that in the report. After pushing, confirm the
-   Security workflow goes green.
-
-8. **Environment type cannot be automated** — it lives only in the Firebase
+7. **Environment type cannot be automated** — it lives only in the Firebase
    console's private backend (verified empirically 2026-08-25: flipping it
    changes neither the Management API `annotations` nor the GCP labels). Add
    a checklist item telling a human to mark the live project as
@@ -301,15 +298,17 @@ manual checklist items.
    `https://console.firebase.google.com/project/<appname>-live/settings/general`.
    Staging stays "Unspecified" — that's correct.
 
-9. Record both project ids for the handover report and drop the manual
+8. Record both project ids for the handover report and drop the manual
    Firebase items from the checklist in favour of "created: `<ids>`".
 
 ## Step 8 — Bitrise app (optional automation)
 
-Runs only if the Bitrise PAT is available in the macOS keychain
+Runs only if the user opted in at the interview **and** the Bitrise PAT is
+available in the macOS keychain
 (`security find-generic-password -s bitrise-pat -w`; it authenticates the
-shared `3SidedCube` Bitrise account). Missing → skip; the checklist keeps
-the manual Bitrise items. API host: `https://api.bitrise.io/v0.1`, header
+shared `3SidedCube` Bitrise account). If either is false, skip; the checklist
+keeps the manual Bitrise items. Bitrise failures never block the bootstrap:
+report what failed and fall back to the manual checklist items. API host: `https://api.bitrise.io/v0.1`, header
 `Authorization: <PAT>`. Workspace: **`c3fb7a679c51271a`** ("3 Sided Cube" —
 the one with the real client apps; the other two workspaces are vestigial).
 
@@ -356,9 +355,9 @@ the one with the real client apps; the other two workspaces are vestigial).
    file must be valid — bootstraps from template ≥ 2026-08-25 carry the
    team stack (`osx-xcode-15.3.x` / `machine_type_id: g2.mac.large` — "Xcode
    15.3 Large", the OS-update standard), the guarded `activate-ssh-key`, no
-   Jira/Slack steps and no unit-test step (tests run on the GitHub Actions
-   PR checks); on older-era repos fix those in the repo first (never via a
-   Bitrise-side copy).
+   Jira/Slack steps and no unit-test step (tests are a local/dev workflow —
+   GitHub Actions CI runs ktlint only); on older-era repos fix those in the
+   repo first (never via a Bitrise-side copy).
 
 3. Webhook — tokenless-git registration reports
    `is_webhook_auto_reg_supported: false`, so wire GitHub directly:
