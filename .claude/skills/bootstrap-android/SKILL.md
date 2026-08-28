@@ -390,23 +390,47 @@ manual checklist items.
    (`GET https://firebase.googleapis.com/v1beta1/projects/<existing-id>/analyticsDetails`
    → `analyticsProperty.analyticsAccountId`) and **never guess**. The
    firebase CLI has no command for linking; call the Management API with
-   the CLI's stored session:
+   the CLI's stored session, once per selected project:
 
    ```
-   node -e "const auth=require('firebase-tools/lib/auth');(async()=>{const a=auth.getGlobalDefaultAccount();const t=await auth.getAccessToken(a.tokens.refresh_token,[]);for(const p of ['<appname>-staging','<appname>-live']){const r=await fetch('https://firebase.googleapis.com/v1beta1/projects/'+p+':addGoogleAnalytics',{method:'POST',headers:{Authorization:'Bearer '+t.access_token,'Content-Type':'application/json'},body:JSON.stringify({analyticsAccountId:'<gaAccountId>'})});const j=await r.json();console.log(p,j.error?j.error.status:'linked');}})()"
+   GA_ID=<gaAccountId> PROJECTS="<appname>-staging <appname>-live" node -e '
+   const auth = require("firebase-tools/lib/auth");
+   (async () => {
+     const account = auth.getGlobalDefaultAccount();
+     const token = (await auth.getAccessToken(account.tokens.refresh_token, [])).access_token;
+     for (const p of process.env.PROJECTS.split(" ")) {
+       const r = await fetch("https://firebase.googleapis.com/v1beta1/projects/" + p + ":addGoogleAnalytics", {
+         method: "POST",
+         headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+         body: JSON.stringify({ analyticsAccountId: process.env.GA_ID }),
+       });
+       const j = await r.json();
+       console.log(p, j.error ? j.error.status : "linked");
+     }
+   })();'
    ```
 
-   (Leans on firebase-tools internals — `lib/auth` — verified on 15.28.1;
-   run from a directory where `firebase-tools` resolves, or use the global
-   install path.) **PERMISSION_DENIED means the runner lacks the Editor
-   role on that GA account** — a Google Analytics grant, separate from
-   Firebase/GCP project rights, typically held by the client or whoever set
-   up their analytics. Fall back to a checklist item linking to
-   `https://console.firebase.google.com/project/<appname>-live/settings/integrations/analytics`
-   (and the staging twin) and note who to ask for GA access.
+   (`PROJECTS` is the selected environments — append `<appname>-dev` when
+   dev was chosen. Run from a directory where `firebase-tools` resolves, or
+   the global install path.)
 
-4. **Enable the Crashlytics service** on both projects (project-level rights
-   suffice — no GA-style grant needed). Same token pattern, POST to:
+   **This leans on firebase-tools internals** (`lib/auth`, verified on
+   15.28.1). If the `require` fails on a newer CLI (internals moved), do
+   NOT chase new internal paths mid-bootstrap — get the token from
+   `gcloud auth print-access-token` instead (any gcloud login with access
+   to the projects), and if that isn't available either, fall back to the
+   console checklist items below.
+
+   **PERMISSION_DENIED means the runner lacks the Editor role on that GA
+   account** — a Google Analytics grant, separate from Firebase/GCP project
+   rights, typically held by the client or whoever set up their analytics.
+   Fall back to a checklist item per selected project linking to
+   `https://console.firebase.google.com/project/<appname>-<env>/settings/integrations/analytics`
+   and note who to ask for GA access.
+
+4. **Enable the Crashlytics service** on each selected project
+   (project-level rights suffice — no GA-style grant needed). Same token
+   pattern (including the gcloud fallback), POST per project to:
 
    ```
    https://serviceusage.googleapis.com/v1/projects/<projectId>/services/firebasecrashlytics.googleapis.com:enable
@@ -433,17 +457,20 @@ manual checklist items.
    is still the template placeholder — delete it and fetch the real dev
    config the same way.
 
-   Sanity-check both files (project_id and package_name match), then prove
-   they parse in the build:
+   Sanity-check every fetched file (project_id and package_name match),
+   then prove each parses in the build via its flavor's
+   `process…GoogleServices` task with any kept api flavor, e.g.
    `./gradlew processFirebaseStagingApiStagingDebugGoogleServices
-   processFirebaseLiveApiLiveDebugGoogleServices`.
+   processFirebaseLiveApiStagingDebugGoogleServices` (add
+   `processFirebaseDevApiStagingDebugGoogleServices` when dev was
+   selected; swap the api flavor if apiStaging was deselected).
 
-6. Commit both configs — **only after verifying the repo is private and
-   org-owned** (`gh api repos/3sidedcube/<repo> --jq .private` must be
-   `true`; refuse otherwise):
+6. Commit the fetched configs — **only after verifying the repo is private
+   and org-owned** (`gh api repos/3sidedcube/<repo> --jq .private` must be
+   `true`; refuse otherwise) — naming the environments actually fetched:
 
    ```
-   build(firebase): add staging and live google-services.json
+   build(firebase): add google-services.json for <selected envs>
    ```
 
 7. **Environment type cannot be automated** — it lives only in the Firebase
@@ -454,8 +481,8 @@ manual checklist items.
    `https://console.firebase.google.com/project/<appname>-live/settings/general`.
    Staging stays "Unspecified" — that's correct.
 
-8. Record both project ids for the handover report and drop the manual
-   Firebase items from the checklist in favour of "created: `<ids>`".
+8. Record the created project ids for the handover report and drop the
+   manual Firebase items from the checklist in favour of "created: `<ids>`".
 
 ## Step 8 — Bitrise app (optional automation)
 
