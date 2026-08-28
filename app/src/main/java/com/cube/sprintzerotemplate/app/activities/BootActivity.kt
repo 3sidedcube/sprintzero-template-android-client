@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.cube.sprintzerotemplate.lib.util.AnalyticsHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * BootActivity is the main activity that gets launched when the device boots up.
@@ -23,7 +24,7 @@ class BootActivity : AppCompatActivity() {
 		splashScreen.setKeepOnScreenCondition { true }
 
 		lifecycleScope.launch {
-			delay(3000L)
+			delay(3000L.milliseconds)
 
 			AnalyticsHelper.setupAnalytics(true)
 
