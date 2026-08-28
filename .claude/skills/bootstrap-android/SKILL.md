@@ -34,14 +34,23 @@ Decide up front which surface you are on and say so in the final report:
 ## Step 0 — Interview & validation
 
 Run the interview as a **walkthrough — one question at a time, in the
-table's order**, not a form to fill in one reply. Each parameter gets its
-own turn: free-text parameters are asked in plain chat (showing the derived
-default, e.g. the package/repo names once the display name is known);
-choice and multi-select parameters use the question UI. Validate each
-answer as it arrives — and confirm derivations (PascalCase name) on the
-spot — so a bad value is caught in place, never after the repo exists.
-Conditional questions (Firebase environments and the GA account on
-`create now`) follow immediately after their parent answer.
+table's order**, not a form to fill in one reply. **Every question goes
+through the question UI** (AskUserQuestion), one per turn:
+
+- The **default / derived value is the first option**, marked
+  "(Recommended)" where the recommendation is genuine — e.g. the derived
+  package and repo names once the display name is known.
+- Optional parameters (Jira key, Figma link, API URLs) always include a
+  **Skip** option.
+- Custom values arrive through the UI's built-in **"Other" free-text
+  input** — never require a separate chat reply. Where a parameter has no
+  derivable default (the display name), the options carry illustrative
+  examples and the real value comes via Other.
+- Validate each answer as it arrives — confirm derivations (PascalCase
+  name) on the spot — so a bad value is caught in place, never after the
+  repo exists.
+- Conditional questions (Firebase environments and the GA account on
+  `create now`) follow immediately after their parent answer.
 
 | Parameter | Placeholder | Validation / default |
 | --- | --- | --- |
