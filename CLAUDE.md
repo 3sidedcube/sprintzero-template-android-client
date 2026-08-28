@@ -1,8 +1,10 @@
 # Sprint Zero Template — Android client
 
 <!-- bootstrap-android: replace this intro with a client project header
-     (client name, Jira board link, one-line app description). Everything
-     below the Toolchain heading applies to generated clients as-is. -->
+     (client name, one-line app description, Jira board link, Figma design
+     file link — the last two so agents can find the board and the designs).
+     Everything below the Toolchain heading applies to generated clients
+     as-is. -->
 The 3 Sided Cube **template** for new native Android client apps. It is never
 shipped itself — the `bootstrap-android` skill generates new client repos from
 it (interview → rename transform → verify → push). Keep it green and current;

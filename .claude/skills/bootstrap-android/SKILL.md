@@ -42,9 +42,10 @@ touching GitHub — a bad package name poisons every file.
 | Package / applicationId | `com.cube.<appname>` | Lowercase dot-separated segments, each `[a-z][a-z0-9]*`. Default prefix `com.cube.`. |
 | Repo name | `<app-name>-android-client` | Kebab-case. Must not already exist in `3sidedcube`. |
 | Client name | `<Client>` | Used in the README header, repo topic, and kickoff issue. |
+| Jira project key | `<KEY>` | Optional. Never invent one. Enables epic creation and branch/PR conventions from day one. When given, record the board link in the client CLAUDE.md header (Step 3) so agents can find it. |
+| Figma project | `<figma.com link>` | Optional. Never invent one. When given, record the design-file link in the client CLAUDE.md header (Step 3) so agents (and the Figma MCP tooling) can find the designs. |
 | API environments | `dev + staging + live` (all on) | Multi-select with **all three toggled on** — the user switches off the ones they don't want (any non-empty subset is valid). The template ships all three; the transform removes each deselected environment's flavor and Bitrise workflow and retargets branch triggers to the nearest surviving workflow (`--api-envs <kept,envs>`). Firebase is **always** exactly staging + live regardless (2 Firebase projects by policy — do not ask). |
 | API base URLs (per env) | `https://api.staging...` | Optional; template placeholders remain if unknown. One per chosen API environment (`--staging-url` / `--live-url` / `--dev-url`). |
-| Jira project key | `<KEY>` | Optional. Never invent one. Enables epic creation and branch/PR conventions from day one. |
 | Firebase projects | `create now` / `manual` | Two per app — `<appname>-staging` + `<appname>-live` — always. If firebase-tools is authenticated (`firebase login:list`), offer to create both under the 3SC org now (Step 7); otherwise record the intended ids for the checklist. |
 | Bitrise app | `create now` / `manual` | If the Bitrise PAT is available (macOS keychain, `security find-generic-password -s bitrise-pat -w`), offer to register the app, wire the webhook and generate/upload the signing keystore now (Step 8); otherwise the checklist keeps the manual Bitrise items. |
 | GA account id | `56643500` | Default: **3 Sided Cube's own GA account `56643500`** (name verified in the GA console, 2026-08-25) — analytics start under 3SC and get transferred to the client's account later when required (GA4 property move). Override only if the client should own analytics from day one — then discover their id from an existing project's `analyticsDetails` (see Step 7); never guess a client id. |
@@ -134,8 +135,11 @@ Three edits the script deliberately leaves to you:
   you're there; the other docs describe the code and transform cleanly.
 - **CLAUDE.md**: the transform renames its heading, but the intro paragraph
   still describes the template — replace it with a client project header per
-  the `<!-- bootstrap-android: ... -->` marker comment in the file, keeping
-  the Toolchain section and everything below as-is.
+  the `<!-- bootstrap-android: ... -->` marker comment in the file (client
+  name, one-line app description, and — when the interview provided them —
+  the Jira board link and the Figma design-file link, so agents working in
+  the client repo can find both). Keep the Toolchain section and everything
+  below as-is.
 - **minSdk**: only if the user overrode it.
 
 ## Step 4 — Verify
