@@ -33,8 +33,15 @@ Decide up front which surface you are on and say so in the final report:
 
 ## Step 0 — Interview & validation
 
-Ask for everything in **one batch**, not a drip-feed. Validate hard before
-touching GitHub — a bad package name poisons every file.
+Run the interview as a **walkthrough — one question at a time, in the
+table's order**, not a form to fill in one reply. Each parameter gets its
+own turn: free-text parameters are asked in plain chat (showing the derived
+default, e.g. the package/repo names once the display name is known);
+choice and multi-select parameters use the question UI. Validate each
+answer as it arrives — and confirm derivations (PascalCase name) on the
+spot — so a bad value is caught in place, never after the repo exists.
+Conditional questions (Firebase environments and the GA account on
+`create now`) follow immediately after their parent answer.
 
 | Parameter | Placeholder | Validation / default |
 | --- | --- | --- |
