@@ -55,6 +55,21 @@ workflows:
         GRADLE_TASK: |-
           assembleRelease
           bundleRelease
+  assembleDevAPKS:
+    before_run:
+      - assemble
+    envs:
+      - opts:
+          is_expand: false
+        DEBUG_VARIANT: firebaseStagingApiDevDebug
+      - opts:
+          is_expand: false
+        RELEASE_VARIANT: firebaseStagingApiDevRelease
+      - opts:
+          is_expand: false
+        GRADLE_TASK: |-
+          assembleFirebaseStagingApiDevRelease
+          bundleFirebaseStagingApiDevRelease
   assembleProdAPKS:
     before_run:
       - assemble
@@ -106,4 +121,4 @@ trigger_map:
   - push_branch: hotfix/*
     workflow: assembleProdAPKS
   - push_branch: develop
-    workflow: assembleStagingAPKS
+    workflow: assembleDevAPKS
