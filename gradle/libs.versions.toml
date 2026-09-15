@@ -10,7 +10,7 @@
 
 [versions]
 agp = "9.4.0"
-ksp = "2.3.11"
+ksp = "2.3.12"
 hilt = "2.60.1"
 googleServices = "4.5.0"
 crashlyticsPlugin = "3.0.8"
