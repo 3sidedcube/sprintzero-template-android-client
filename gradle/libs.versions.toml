@@ -9,8 +9,8 @@
 # - Firebase BoM 34+ removed the -ktx artifacts; use the base artifacts.
 
 [versions]
-agp = "9.5.0"
-ksp = "2.3.12"
+agp = "9.5.1"
+ksp = "2.3.13"
 hilt = "2.60.1"
 googleServices = "4.5.0"
 crashlyticsPlugin = "3.0.8"
